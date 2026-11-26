@@ -44,7 +44,7 @@ jobs:
         uses: actions/cache@v4
         with:
           path: build/sim
-          key: cxxrtl-${{ runner.os }}-${{ hashFiles('orbit_rv/rtl/*.py', 'orbit_rv/sim/tb.cc', 'orbit_rv/memmap.py') }}
+          key: cxxrtl-${{ runner.os }}-${{ hashFiles('orbit_rv/rtl/*.py', 'orbit_rv/sim/tb.cc', 'orbit_rv/sim/__init__.py', 'orbit_rv/memmap.py') }}
 
       - name: Unit tests + RTL simulation tests
         env:
@@ -121,7 +121,7 @@ jobs:
         uses: actions/cache@v4
         with:
           path: build/sim
-          key: cxxrtl-${{ runner.os }}-${{ hashFiles('orbit_rv/rtl/*.py', 'orbit_rv/sim/tb.cc', 'orbit_rv/memmap.py') }}
+          key: cxxrtl-${{ runner.os }}-${{ hashFiles('orbit_rv/rtl/*.py', 'orbit_rv/sim/tb.cc', 'orbit_rv/sim/__init__.py', 'orbit_rv/memmap.py') }}
 
       - name: Compare Spike vs ISS vs RTL commit by commit
         run: |

@@ -68,7 +68,9 @@ def build_sim(ram_size: int = mm.RAM_SIZE_SIM, verbose: bool = False, **soc_kw) 
         os.chdir(cwd)
     tb = work / "tb.cc"
     tb.write_bytes(TB.read_bytes())
-    cmd = [sys.executable, "-m", "ziglang", "c++", "-std=c++17", "-O2", "-fbracket-depth=4096",
+    # -mcpu=baseline: zig targets the build machine's CPU by default, and CI caches this binary
+    # across runners with different CPUs (an AVX-512 build crashes with SIGILL on an older runner).
+    cmd = [sys.executable, "-m", "ziglang", "c++", "-std=c++17", "-O2", "-mcpu=baseline", "-fbracket-depth=4096",
            f"-I{cxxrtl_include()}", f"-I{work}", str(tb), "-o", str(exe)]
     if verbose:
         print(" ".join(cmd))
@@ -101,7 +103,7 @@ def run_rtl(img, ram_size: int = mm.RAM_SIZE_SIM, max_cycles: int = 10_000_000, 
             args += ["--script", str(td / "script.txt")]
         r = subprocess.run(args, capture_output=True, text=True)
         if r.returncode:
-            raise RuntimeError(f"simulator failed: {r.stderr}")
+            raise RuntimeError(f"simulator failed (exit {r.returncode}): {r.stderr}")
         res = json.loads((td / "perf.json").read_text())
         res["uart"] = (td / "uart.txt").read_bytes().decode("latin-1")
         if log:
