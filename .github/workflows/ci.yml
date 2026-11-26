@@ -18,9 +18,9 @@ jobs:
     name: unit tests, riscv-tests on ISS + RTL (lockstep), IPC
     runs-on: ubuntu-24.04
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
-      - uses: actions/setup-python@v5
+      - uses: actions/setup-python@v7
         with:
           python-version: "3.12"
 
@@ -41,7 +41,7 @@ jobs:
           python tools/build_benchmarks.py --src build/riscv-tests-src --out build/bench
 
       - name: Cache the CXXRTL simulator
-        uses: actions/cache@v4
+        uses: actions/cache@v6
         with:
           path: build/sim
           key: cxxrtl-${{ runner.os }}-${{ hashFiles('orbit_rv/rtl/*.py', 'orbit_rv/sim/tb.cc', 'orbit_rv/sim/__init__.py', 'orbit_rv/memmap.py') }}
@@ -61,7 +61,7 @@ jobs:
       - name: IPC / cache / branch-prediction table (RTL simulation)
         run: python tools/perf_table.py --bench build/bench --out build/perf.json
 
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v7
         with:
           name: results
           path: |
@@ -74,9 +74,9 @@ jobs:
     name: Spike commit-log lockstep (ISS + RTL vs Spike)
     runs-on: ubuntu-24.04
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
-      - uses: actions/setup-python@v5
+      - uses: actions/setup-python@v7
         with:
           python-version: "3.12"
 
@@ -95,7 +95,7 @@ jobs:
 
       - name: Cache Spike build
         id: spike-cache
-        uses: actions/cache@v4
+        uses: actions/cache@v6
         with:
           path: ~/spike
           key: spike-${{ runner.os }}-${{ env.SPIKE_COMMIT }}
@@ -125,7 +125,7 @@ jobs:
           python tools/build_benchmarks.py --src build/riscv-tests-src --out build/bench
 
       - name: Cache the CXXRTL simulator
-        uses: actions/cache@v4
+        uses: actions/cache@v6
         with:
           path: build/sim
           key: cxxrtl-${{ runner.os }}-${{ hashFiles('orbit_rv/rtl/*.py', 'orbit_rv/sim/tb.cc', 'orbit_rv/sim/__init__.py', 'orbit_rv/memmap.py') }}
@@ -138,7 +138,7 @@ jobs:
             --out build/spike-report.md --json build/spike-report.json
           cat build/spike-report.md >> "$GITHUB_STEP_SUMMARY"
 
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v7
         if: always()
         with:
           name: spike-report
@@ -150,9 +150,9 @@ jobs:
     name: ECP5 synthesis + place-and-route (yowasp)
     runs-on: ubuntu-24.04
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
-      - uses: actions/setup-python@v5
+      - uses: actions/setup-python@v7
         with:
           python-version: "3.12"
 
@@ -164,7 +164,7 @@ jobs:
       - name: Synthesis and PnR for ULX3S 85F (empty RAM image)
         run: python fpga/ulx3s.py --out build/fpga
 
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v7
         with:
           name: fpga-report
           path: |
