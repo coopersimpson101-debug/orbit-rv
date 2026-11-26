@@ -19,4 +19,8 @@ All notable changes to this project are documented here. The format follows
 - CXXRTL-based fast RTL simulator built with Yosys and zig c++.
 - riscv-tests and benchmark builds with zig cc; IPC / cache / predictor table.
 - ECP5 (ULX3S 85F) synthesis and place-and-route with the yowasp tools.
-- CI: unit and RTL tests, Spike commit-log comparison, FPGA synthesis.
+- CI: unit and RTL tests, Spike commit-log comparison (Spike started at the ELF entry with `--pc`), FPGA synthesis.
+
+### Changed (found by the first CI runs, before tagging)
+- `mstatus.FS` is writable (SD follows FS = Dirty), matching Spike; both are legal with S-mode and no F.
+- The CXXRTL simulator is built for a baseline CPU so the CI cache works across runners.
