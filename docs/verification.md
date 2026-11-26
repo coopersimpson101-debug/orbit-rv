@@ -56,13 +56,30 @@ runs every riscv-test and benchmark with
 RTL with `tools/spike_compare.py`: PC, encoding, privilege and integer
 register writes from the ELF entry on. CSR reads whose values are
 implementation-defined (misa, `m*id`, cycle/time, PMP, triggers, mip) and RTL
-`nd` values are not value-compared. The job fails if any program in the
-must-match set (rv64ui/um/ua `-p` except `ma_data`, and the benchmarks except
-`irqtest`, whose interrupt timing is not architectural) differs. Benchmarks
+`nd` values are not value-compared. One architecturally allowed difference is
+resynchronised rather than reported: an SC that fails spuriously on one side
+(Spike drops reservations at its hart-interleave boundary every few thousand
+instructions, which `rv64ua-p-lrsc`'s 1024-iteration loop hits) is skipped up
+to that side's successful retry of the same SC. The tests orbit-rv fails by
+design (`ma_data` -p/-v, `pmpaddr`) are not run on Spike, and a Spike run that
+exceeds 300 s is recorded as a timeout instead of stopping the job. The job
+fails if any other program differs or times out, except
+`rv64mi-p-breakpoint` (Spike implements debug triggers, orbit-rv does not) and
+`irqtest` (interrupt timing is not architectural). Benchmarks
 are compared ISS-vs-Spike only: they compute with `mcycle`, so RTL values
 legitimately diverge from Spike's after the first counter read (the RTL is
 covered by the ISS lockstep instead). The result table is published in the
-job summary. Spike could not be run on the Windows development machine: the
+job summary.
+
+The first CI run against Spike found one real divergence: Spike implements
+`mstatus.FS` as writable without an FPU, so the riscv-tests `-v` environment
+(which sets FS) reads back FS = Dirty and SD = 1 in `sstatus`, where orbit-rv
+had FS hard-wired to 0. The privileged spec allows either when S-mode is
+present (FS is only required to be read-only zero with neither F nor S-mode);
+orbit-rv now implements FS as writable in both the ISS and the RTL, matching
+Spike, and the riscv-tests lockstep and the orbit-os boot were re-run.
+
+Spike could not be run on the Windows development machine: the
 script's plumbing was exercised locally only with the ISS standing in for
 Spike, so the real outcome is whatever CI reports.
 

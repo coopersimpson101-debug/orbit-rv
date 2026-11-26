@@ -103,8 +103,8 @@ Block RAM answers in one cycle, so a line refill is 4 x 2 cycles.
 
 ## Privileged architecture
 
-M, S and U modes; `mstatus` (SIE MIE SPIE MPIE SPP MPP MPRV SUM MXR TVM TW
-TSR, UXL=SXL=64), `medeleg`/`mideleg`, `mie`/`mip`, `mtvec`/`stvec`
+M, S and U modes; `mstatus` (SIE MIE SPIE MPIE SPP MPP FS MPRV SUM MXR TVM TW
+TSR, SD, UXL=SXL=64), `medeleg`/`mideleg`, `mie`/`mip`, `mtvec`/`stvec`
 (direct and vectored), `mepc`/`sepc`, `mcause`/`scause`, `mtval`/`stval`,
 scratch registers, `mcounteren`/`scounteren`, `satp`, `mcycle`/`minstret`
 and the user `cycle`/`time`/`instret` views. Interrupt priority MEI > MSI >
@@ -117,6 +117,7 @@ the golden ISS (and documented so the kernel port can rely on them):
 | choice | consequence |
 |---|---|
 | Svade: hardware never sets PTE.A/D | A=0, or D=0 on a store, is a page fault; software pre-sets A/D |
+| `mstatus.FS` writable without an FPU (as in Spike), SD = (FS == Dirty); XS, VS read 0 | S-mode software may track/emulate FP state; matches Spike's `sstatus` |
 | misaligned loads/stores/AMOs trap | `rv64ui-*-ma_data` fails (it expects hardware support) |
 | no PMP entries (`pmpcfg*`/`pmpaddr*` read 0) | `rv64mi-p-pmpaddr` fails |
 | no debug triggers (`tselect`/`tdata*` read 0) | `rv64mi-p-breakpoint` passes via its "no triggers" path |

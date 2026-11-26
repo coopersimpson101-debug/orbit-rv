@@ -44,6 +44,6 @@ re-program) to reset; type the shell commands from `tools/boot_os.py`.
 | `poweroff` | LED0 lights (finisher) | ⏳ |
 | `uptime` after 60 s wall clock | ~60 s (10 MHz mtime from 25 MHz) | ⏳ |
 
-Timing: for this design nextpnr reported a post-route Fmax of 27.36 MHz
+Timing: for this design nextpnr reported a post-route Fmax of 27.63 MHz
 against the 25 MHz constraint (seed 1, see `docs/results/fpga.json`), so the
-board clock is inside the timing analysis with about 9 % margin.
+board clock is inside the timing analysis with about 10 % margin.

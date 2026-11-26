@@ -6,6 +6,8 @@ and is the reference the RTL is checked against, instruction by instruction.
 
 Implementation choices that the RTL shares (all permitted by the spec):
   * Svade: the hardware never sets PTE.A/D; it raises a page fault instead.
+  * mstatus.FS is writable although there is no F extension (as in Spike); SD
+    reads 1 when FS = Dirty. XS and VS are read-only zero.
   * Misaligned loads/stores/AMOs trap (checked before translation).
   * No PMP entries (pmpcfg*/pmpaddr* read as zero), no triggers
     (tselect/tdata* read as zero), ASIDLEN = 0, no hardware performance
@@ -37,8 +39,12 @@ _ACCESS_FAULT = {FETCH: FETCH_ACCESS, LOAD: LOAD_ACCESS, STORE: STORE_ACCESS}
 SIE, MIE, SPIE, MPIE, SPP = 1 << 1, 1 << 3, 1 << 5, 1 << 7, 1 << 8
 MPP_SHIFT = 11
 MPRV, SUM, MXR, TVM, TW, TSR = 1 << 17, 1 << 18, 1 << 19, 1 << 20, 1 << 21, 1 << 22
-MSTATUS_WMASK = SIE | MIE | SPIE | MPIE | SPP | (3 << MPP_SHIFT) | MPRV | SUM | MXR | TVM | TW | TSR
-SSTATUS_MASK = SIE | SPIE | SPP | SUM | MXR | (3 << 32)
+# FS is writable although there is no F extension (allowed with S-mode, sec. 3.1.6.6 of the
+# privileged spec, so S-mode software can emulate FP); SD = (FS == Dirty). XS and VS read zero.
+FS = 3 << 13
+SD = SIGN64
+MSTATUS_WMASK = SIE | MIE | SPIE | MPIE | SPP | (3 << MPP_SHIFT) | FS | MPRV | SUM | MXR | TVM | TW | TSR
+SSTATUS_MASK = SIE | SPIE | SPP | FS | SUM | MXR | (3 << 32) | SD
 MSTATUS_FIXED = (2 << 32) | (2 << 34)  # UXL = SXL = 64
 
 MISA = (2 << 62) | (1 << 0) | (1 << 8) | (1 << 12) | (1 << 18) | (1 << 20)  # A I M S U
@@ -307,9 +313,9 @@ class Hart:
         if ((a >> 8) & 3) > p:
             raise Trap(ILLEGAL)
         if a == 0x300:
-            return self.mstatus
+            return self.mstatus | (SD if self.mstatus & FS == FS else 0)
         if a == 0x100:
-            return self.mstatus & SSTATUS_MASK
+            return (self.mstatus | (SD if self.mstatus & FS == FS else 0)) & SSTATUS_MASK
         if a == 0x301:
             return MISA
         if a == 0x302:
@@ -389,7 +395,7 @@ class Hart:
         if a == 0x300:
             self._set_mstatus((self.mstatus & ~MSTATUS_WMASK) | (v & MSTATUS_WMASK))
         elif a == 0x100:
-            m = SSTATUS_MASK & ~(3 << 32)
+            m = SSTATUS_MASK & ~(3 << 32) & ~SD
             self._set_mstatus((self.mstatus & ~m) | (v & m))
         elif a == 0x302:
             self.medeleg = v & MEDELEG_MASK

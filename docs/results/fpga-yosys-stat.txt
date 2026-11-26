@@ -5,20 +5,20 @@
 
         +----------Local Count, excluding submodules.
         | 
-    21331 wires
-    46388 wire bits
-    21331 public wires
-    46388 public wire bits
+    20451 wires
+    45277 wire bits
+    20451 public wires
+    45277 public wire bits
         4 ports
        11 port bits
-    25912 cells
+    25011 cells
        18   $scopeinfo
-      909   CCU2C
+      901   CCU2C
       134   DP16KD
-      393   L6MUX21
-    15481   LUT4
+      243   L6MUX21
+    15045   LUT4
         4   MULT18X18D
-     2408   PFUMX
+     2099   PFUMX
        64   TRELLIS_DPR16X4
-     6501   TRELLIS_FF
+     6503   TRELLIS_FF
 

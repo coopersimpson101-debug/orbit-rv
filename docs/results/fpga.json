@@ -1,10 +1,10 @@
 {
  "TRELLIS_COMB": {
-  "used": 17885,
+  "used": 17427,
   "avail": 83640
  },
  "TRELLIS_FF": {
-  "used": 6501,
+  "used": 6503,
   "avail": 83640
  },
  "DP16KD": {
@@ -23,7 +23,7 @@
   "used": 11,
   "avail": 365
  },
- "fmax_mhz": 27.36,
+ "fmax_mhz": 27.63,
  "target_mhz": 25.0,
  "timing": "PASS"
 }

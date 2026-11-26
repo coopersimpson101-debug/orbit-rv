@@ -87,12 +87,14 @@ class Core(Elaboratable):
         st_sie, st_mie, st_spie, st_mpie, st_spp = (Signal(name=n) for n in
                                                     ("st_sie", "st_mie", "st_spie", "st_mpie", "st_spp"))
         st_mpp = Signal(2)
+        st_fs = Signal(2)   # writable without an FPU (S-mode FP emulation); SD = FS == Dirty
         st_mprv, st_sum, st_mxr, st_tvm, st_tw, st_tsr = (Signal(name=n) for n in (
             "st_mprv", "st_sum", "st_mxr", "st_tvm", "st_tw", "st_tsr"))
         mstatus = Signal(64)
         m.d.comb += mstatus.eq(Cat(C(0, 1), st_sie, C(0, 1), st_mie, C(0, 1), st_spie, C(0, 1),
-                                   st_mpie, st_spp, C(0, 2), st_mpp, C(0, 4), st_mprv, st_sum,
-                                   st_mxr, st_tvm, st_tw, st_tsr, C(0, 9), C(0xA, 4)))
+                                   st_mpie, st_spp, C(0, 2), st_mpp, st_fs, C(0, 2), st_mprv, st_sum,
+                                   st_mxr, st_tvm, st_tw, st_tsr, C(0, 9), C(0xA, 4), C(0, 27),
+                                   st_fs == 3))
         medeleg = Signal(16)
         mideleg = Signal(12)
         mie = Signal(12)
@@ -610,7 +612,8 @@ class Core(Elaboratable):
         cbit = csr_addr[:5]
         m.d.comb += cnt_ok.eq((priv == 3) | (mcounteren.bit_select(cbit, 1)
                                             & ((priv == 1) | scounteren.bit_select(cbit, 1))))
-        sstatus_mask = (1 << 1) | (1 << 5) | (1 << 8) | (1 << 18) | (1 << 19) | (3 << 32)
+        sstatus_mask = ((1 << 1) | (1 << 5) | (1 << 8) | (3 << 13) | (1 << 18) | (1 << 19) | (3 << 32)
+                        | (1 << 63))
         with m.Switch(csr_addr):
             for a, v in ((0x300, mstatus), (0x100, mstatus & sstatus_mask), (0x301, C(MISA, 64)),
                          (0x302, medeleg), (0x303, mideleg), (0x304, mie), (0x104, mie & mideleg),
@@ -756,12 +759,12 @@ class Core(Elaboratable):
                     with m.Case(0x300):
                         m.d.sync += [st_sie.eq(v[1]), st_mie.eq(v[3]), st_spie.eq(v[5]),
                                      st_mpie.eq(v[7]), st_spp.eq(v[8]),
-                                     st_mpp.eq(Mux(v[11:13] == 2, 0, v[11:13])),
+                                     st_mpp.eq(Mux(v[11:13] == 2, 0, v[11:13])), st_fs.eq(v[13:15]),
                                      st_mprv.eq(v[17]), st_sum.eq(v[18]), st_mxr.eq(v[19]),
                                      st_tvm.eq(v[20]), st_tw.eq(v[21]), st_tsr.eq(v[22])]
                     with m.Case(0x100):
                         m.d.sync += [st_sie.eq(v[1]), st_spie.eq(v[5]), st_spp.eq(v[8]),
-                                     st_sum.eq(v[18]), st_mxr.eq(v[19])]
+                                     st_sum.eq(v[18]), st_mxr.eq(v[19]), st_fs.eq(v[13:15])]
                     with m.Case(0x302):
                         m.d.sync += medeleg.eq(v[:16] & 0xB3FF)
                     with m.Case(0x303):

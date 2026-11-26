@@ -71,7 +71,7 @@ branches and jumps resolved in execute.</sub>
   refilling for an interrupted load) - see [verification](docs/verification.md).
 - **Runs on pip alone**: Amaranth -> Yosys CXXRTL -> `zig c++` gives a cycle-accurate model of the whole SoC (48 k cycles/s on the orbit-os run while also writing the full commit log);
   the riscv-tests are built with `zig cc`; YoWASP Yosys + nextpnr place and route it for the ULX3S 85F
-  (17,885 LUT4s, 6,501 FFs, 134 DP16KD).
+  (17,427 LUT4s, 6,503 FFs, 134 DP16KD).
 
 ## Status
 
@@ -82,7 +82,7 @@ branches and jumps resolved in execute.</sub>
 | 🧪 | orbit-os boot + shell session on the RTL (256 KiB, 25 MHz model), lockstep-checked | CXXRTL simulation, locally |
 | 🧪 | IPC / cache hit rate / prediction accuracy for 10 programs | CXXRTL simulation, locally; CI |
 | 🧪 | Spike commit-log comparison (ISS vs Spike, RTL vs Spike) | CI only (Spike built from the official source at a pinned master commit, `982f078`) - see the CI job summary for the result |
-| ✅ | ECP5 synthesis, place-and-route and bitstream for the ULX3S 85F: post-route Fmax **27.36 MHz**, meets the 25 MHz target | yowasp-yosys / yowasp-nextpnr-ecp5 / ecppack, locally; CI |
+| ✅ | ECP5 synthesis, place-and-route and bitstream for the ULX3S 85F: post-route Fmax **27.63 MHz**, meets the 25 MHz target | yowasp-yosys / yowasp-nextpnr-ecp5 / ecppack, locally; CI |
 | ⏳ | **Board boot on a ULX3S** (UART log) | [TODO for the author](#hardware-validation--todo-for-the-author) |
 | 🗺️ | C extension, PMP, 2-way caches, store buffer | [roadmap](#roadmap) |
 
@@ -209,12 +209,12 @@ yowasp-nextpnr-ecp5 0.11, seed 1; [`fpga.json`](docs/results/fpga.json)):
 
 | resource | used | available | |
 |---|---:|---:|---:|
-| LUT4 + carry (TRELLIS_COMB) | 17,885 | 83,640 | 21% |
-| flip-flops | 6,501 | 83,640 | 8% |
+| LUT4 + carry (TRELLIS_COMB) | 17,427 | 83,640 | 21% |
+| flip-flops | 6,503 | 83,640 | 8% |
 | block RAM (DP16KD, 18 Kbit) | 134 | 208 | 64% |
 | DSP multipliers (MULT18X18D) | 4 | 156 | |
 | distributed RAM (register file) | 64 TRELLIS_RAMW | 10,455 | |
-| **post-route Fmax** | **27.36 MHz** | target 25 MHz | meets 25 MHz |
+| **post-route Fmax** | **27.63 MHz** | target 25 MHz | meets 25 MHz |
 
 Most of the block RAM is the 256 KiB main memory (128 DP16KD); the caches use 6. The critical path
 starts at the M-stage virtual address and runs through the DTLB CAM and the physical-address range
@@ -222,7 +222,8 @@ checks. Two RTL changes were made for timing, both re-verified with the full ris
 run and the orbit-os boot. Measured post-route Fmax (one seed each): 24.09 MHz for the first
 version; 23.42 MHz after the D-cache read-address select was switched to last cycle's stall (no
 gain within seed noise); 27.36 MHz after AMOs were given an extra cycle so that block-RAM read data
-no longer feeds block-RAM write data through the AMO ALU in one cycle.
+no longer feeds block-RAM write data through the AMO ALU in one cycle; 27.63 MHz for the current
+design (after `mstatus.FS` became writable, a functional change found by the Spike comparison).
 
 ## Hardware validation / TODO for the author
 
@@ -241,7 +242,7 @@ python -m serial.tools.miniterm /dev/ttyUSB0 115200 --raw | tee docs/results/boa
 | `spawn spin` / `spawn user` / `spawn ufault` | preemption, U-mode syscalls, fault kills only the task | ⏳ |
 | `uptime` vs a stopwatch after 60 s | within 1 % (mtime = 10 MHz from 25 MHz) | ⏳ |
 | `poweroff` | LED0 on | ⏳ |
-| timing margin | nextpnr says 27.36 MHz for 25 MHz; check stability over a long `spawn spin` run | ⏳ |
+| timing margin | nextpnr says 27.63 MHz for 25 MHz; check stability over a long `spawn spin` run | ⏳ |
 
 ## Roadmap
 

@@ -4,14 +4,18 @@
     python tools/spike_compare.py --spike /opt/spike/bin/spike \\
         --tests build/riscv-tests --bench build/bench --rtl --out spike-report.md
 
-For every program: run ``spike --isa=rv64ima_zicsr_zifencei --log-commits``,
+For every program: run ``spike --isa=rv64ima_zicsr_zifencei_zicntr_zihpm --log-commits``,
 the ISS with a commit trace, and (with ``--rtl``) the CXXRTL simulator;
 compare PC, encoding, privilege and integer-register writes commit by commit
 from the ELF entry point on. Register values of CSR reads that are
 implementation-defined (misa, m*id, cycle/time, PMP, trigger CSRs, mip) are
 not compared, nor RTL values tagged ``nd`` (MMIO, timers); the instruction
-itself still is. Exit status is non-zero if any program in the must-match set
-(rv64ui/um/ua -p tests and the benchmarks) differs.
+itself still is. A spurious SC failure on one side (allowed by the ISA; Spike
+drops reservations at its hart-interleave boundary) is resynchronised. The
+tests orbit-rv fails by design are skipped. Exit status is non-zero if any
+program in the must-match set (everything except rv64mi-p-breakpoint, which
+depends on debug triggers, and irqtest, which depends on interrupt timing)
+differs or times out.
 
 This runs in CI (ubuntu) where Spike is built from source; it cannot run on
 the Windows development machine.
@@ -37,7 +41,13 @@ IMPL_DEFINED_CSRS = ({0x301, 0xF11, 0xF12, 0xF13, 0xF15, 0xB00, 0xC00, 0xC01, 0x
                       0x10A, 0x320, 0x7A0, 0x7A1, 0x7A2, 0x7A3, 0x7A5}
                      | set(range(0x3A0, 0x3F0)) | set(range(0xB03, 0xB20)) | set(range(0xC03, 0xC20))
                      | set(range(0x323, 0x340)))
-MUST_MATCH = re.compile(r"^(rv64u[ima]-p-(?!ma_data)|bench-(?!irqtest))")
+# Tests orbit-rv fails by design (tools/run_riscv_tests.py KNOWN_FAIL): not run on Spike.
+# ma_data needs hardware misaligned support; on Spike it can also run for a very long time.
+EXPECTED_FAIL = {"rv64ui-p-ma_data", "rv64ui-v-ma_data", "rv64mi-p-pmpaddr"}
+# Everything else must match, except programs whose results depend on implementation-defined
+# features: debug triggers (breakpoint) and interrupt timing (irqtest).
+MUST_MATCH = re.compile(r"^(rv64(?!mi-p-breakpoint)|bench-(?!irqtest))")
+SPIKE_TIMEOUT = 300
 
 
 def masked(c: Commit) -> Commit:
@@ -47,19 +57,47 @@ def masked(c: Commit) -> Commit:
     return c
 
 
+def is_sc(c: Commit) -> bool:
+    return (c.insn & 0x7F) == 0x2F and (c.insn >> 27) == 0x03
+
+
+def _sc_resync(seq: list[Commit], k: int, limit: int = 256) -> int | None:
+    """Index of the next *successful* SC at the same PC after a failed SC at seq[k]."""
+    for m in range(k + 1, min(len(seq), k + limit)):
+        if seq[m].pc == seq[k].pc and is_sc(seq[m]) and not any(seq[m].writes.values()):
+            return m
+    return None
+
+
 def compare(ref: list[Commit], dut: list[Commit], nd: set[int] | None = None) -> tuple[bool, int, str]:
-    n = min(len(ref), len(dut))
-    for i in range(n):
-        a, b = masked(ref[i]), masked(dut[i])
-        if nd and i in nd:
+    """Commit-by-commit compare. One architecturally allowed difference is tolerated:
+    an SC may fail spuriously (Spike drops the reservation at its hart-interleave
+    boundary every few thousand instructions). If one side's SC fails where the other's
+    succeeds, the failing side's retry loop is skipped up to its successful SC at the
+    same PC, and the comparison continues from there."""
+    i = j = n = 0
+    resyncs = 0
+    while i < len(ref) and j < len(dut):
+        a, b = masked(ref[i]), masked(dut[j])
+        if nd and j in nd:
             a, b = Commit(a.priv, a.pc, a.insn, {}), Commit(b.priv, b.pc, b.insn, {})
         if (a.pc, a.insn, a.priv, a.writes) != (b.pc, b.insn, b.priv, b.writes):
-            return False, i, f"commit {i}: spike {ref[i]} | other {dut[i]}"
+            if is_sc(a) and is_sc(b) and a.pc == b.pc and a.writes.keys() == b.writes.keys():
+                fa, fb = any(a.writes.values()), any(b.writes.values())
+                if fa and not fb and (k := _sc_resync(ref, i)) is not None:
+                    i, resyncs = k, resyncs + 1
+                    continue
+                if fb and not fa and (k := _sc_resync(dut, j)) is not None:
+                    j, resyncs = k, resyncs + 1
+                    continue
+            return False, n, f"commit {n}: spike {ref[i]} | other {dut[j]}"
+        i, j, n = i + 1, j + 1, n + 1
     # Spike keeps spinning in the tohost loop until its HTIF polls (every few
     # thousand steps), so its log may be longer; the other simulators stop at once.
-    if len(dut) > len(ref) + 64 or len(ref) > len(dut) + 20000:
+    if len(dut) - j > 64 or len(ref) - i > 20000:
         return False, n, f"length spike={len(ref)} other={len(dut)}"
-    return True, n, f"{n} commits"
+    extra = f", {resyncs} spurious SC failure(s) skipped" if resyncs else ""
+    return True, n, f"{n} commits{extra}"
 
 
 # orbit-rv implements cycle/time/instret (Zicntr) and read-as-zero hpmcounters (Zihpm); current
@@ -68,14 +106,18 @@ ISA_STRINGS = ["rv64ima_zicsr_zifencei_zicntr_zihpm", "rv64ima_zicsr_zifencei", 
 _isa: list[str] = []
 
 
-def run_spike(spike: str, elf: Path, td: Path) -> list[Commit]:
+def run_spike(spike: str, elf: Path, td: Path) -> list[Commit] | None:
+    """Spike's commit log, or None if Spike timed out."""
     log = td / (elf.name + ".spike.log")
     for isa in (_isa or ISA_STRINGS):
         if log.exists():
             log.unlink()
-        r = subprocess.run([spike, f"--isa={isa}", f"-m{mm.RAM_BASE:#x}:0x1000000",
-                            "--log-commits", f"--log={log}", str(elf)],
-                           capture_output=True, text=True, timeout=600)
+        try:
+            r = subprocess.run([spike, f"--isa={isa}", f"-m{mm.RAM_BASE:#x}:0x1000000",
+                                "--log-commits", f"--log={log}", str(elf)],
+                               capture_output=True, text=True, timeout=SPIKE_TIMEOUT)
+        except subprocess.TimeoutExpired:
+            return None
         if log.exists() and log.stat().st_size:
             if not _isa:
                 _isa.append(isa)
@@ -124,7 +166,21 @@ def main(argv=None) -> int:
     rows, results, bad = [], {}, []
     with tempfile.TemporaryDirectory() as td:
         for name, elf in progs:
+            if name in EXPECTED_FAIL:
+                rows.append(f"| {name} | no | skipped | " + ("skipped |" if a.rtl else "")
+                            + " expected failure on orbit-rv (see README)")
+                print(rows[-1], flush=True)
+                continue
             spike = run_spike(a.spike, elf, Path(td))
+            if spike is None:
+                results[name] = {"iss": False, "iss_commits": 0,
+                                 "iss_msg": f"spike timed out after {SPIKE_TIMEOUT} s"}
+                if MUST_MATCH.match(name):
+                    bad.append(name)
+                rows.append(f"| {name} | {'yes' if MUST_MATCH.match(name) else 'no'} | TIMEOUT | "
+                            + ("- |" if a.rtl else "") + f" spike timed out after {SPIKE_TIMEOUT} s")
+                print(rows[-1], flush=True)
+                continue
             ok_i, n_i, msg_i = compare(spike, run_iss(elf))
             r = {"iss": ok_i, "iss_commits": n_i, "iss_msg": msg_i}
             if a.rtl and name.startswith("rv64"):
@@ -141,7 +197,9 @@ def main(argv=None) -> int:
             rows.append(f"| {name} | {'yes' if must else 'no'} | {'match' if ok_i else 'MISMATCH'} {n_i} | "
                         + ((f"{'match' if r['rtl'] else 'MISMATCH'} {r['rtl_commits']} |" if "rtl" in r
                             else "n/a (cycle-dependent) |") if a.rtl else "")
-                        + ("" if ok_i and r.get("rtl", True) else f" {r['iss_msg'] if not ok_i else r['rtl_msg']}"))
+                        + (f" {r['iss_msg'] if not ok_i else r['rtl_msg']}" if not (ok_i and r.get("rtl", True))
+                           else "".join(f" {m.split(', ', 1)[1]}" for m in (msg_i, r.get("rtl_msg", ""))
+                                        if "spurious" in m)[:200]))
             print(rows[-1], flush=True)
     head = "| program | must match | ISS vs Spike | " + ("RTL vs Spike |" if a.rtl else "") + " note\n"
     head += "|---|---|---|" + ("---|" if a.rtl else "") + "---\n"

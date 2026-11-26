@@ -19,8 +19,8 @@
  "traps": 242,
  "ipc": 0.368,
  "simulated_seconds_at_25MHz": 0.65,
- "wall_seconds": 337.8,
+ "wall_seconds": 312.0,
  "lockstep": true,
  "lockstep_msg": "5978340 commits/traps match",
- "lockstep_seconds": 110.1
+ "lockstep_seconds": 63.1
 }
