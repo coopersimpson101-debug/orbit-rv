@@ -62,7 +62,9 @@ def compare(ref: list[Commit], dut: list[Commit], nd: set[int] | None = None) ->
     return True, n, f"{n} commits"
 
 
-ISA_STRINGS = ["rv64ima_zicsr_zifencei", "rv64ima"]  # older Spike releases imply Zicsr/Zifencei
+# orbit-rv implements cycle/time/instret (Zicntr) and read-as-zero hpmcounters (Zihpm); current
+# Spike only allows those CSR reads when the extensions are named. Fallbacks are for other Spikes.
+ISA_STRINGS = ["rv64ima_zicsr_zifencei_zicntr_zihpm", "rv64ima_zicsr_zifencei", "rv64ima"]
 _isa: list[str] = []
 
 

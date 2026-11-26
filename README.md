@@ -81,7 +81,7 @@ branches and jumps resolved in execute.</sub>
 | 🧪 | riscv-tests on the RTL: **191/194**, each commit lockstep-checked against the ISS | CXXRTL simulation, locally; CI |
 | 🧪 | orbit-os boot + shell session on the RTL (256 KiB, 25 MHz model), lockstep-checked | CXXRTL simulation, locally |
 | 🧪 | IPC / cache hit rate / prediction accuracy for 10 programs | CXXRTL simulation, locally; CI |
-| 🧪 | Spike commit-log comparison (ISS vs Spike, RTL vs Spike) | CI only (Spike built from source) - see the CI job summary for the result |
+| 🧪 | Spike commit-log comparison (ISS vs Spike, RTL vs Spike) | CI only (Spike built from the official source at a pinned master commit, `982f078`) - see the CI job summary for the result |
 | ✅ | ECP5 synthesis, place-and-route and bitstream for the ULX3S 85F: post-route Fmax **27.36 MHz**, meets the 25 MHz target | yowasp-yosys / yowasp-nextpnr-ecp5 / ecppack, locally; CI |
 | ⏳ | **Board boot on a ULX3S** (UART log) | [TODO for the author](#hardware-validation--todo-for-the-author) |
 | 🗺️ | C extension, PMP, 2-way caches, store buffer | [roadmap](#roadmap) |

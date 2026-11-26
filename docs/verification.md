@@ -49,8 +49,10 @@ lockstep with the ISS.
 ## 3. Spike (CI only)
 
 `.github/workflows/ci.yml` job `spike` builds Spike from the official
-`riscv-isa-sim` source at a pinned tag (cached), runs every riscv-test and
-benchmark with `--log-commits`, and compares Spike against the ISS and the
+`riscv-isa-sim` source at a pinned master commit (`982f078`, 2026-11-21; the
+last release tag, v1.1.0, no longer compiles with current GCC), caches it,
+runs every riscv-test and benchmark with
+`--isa=rv64ima_zicsr_zifencei_zicntr_zihpm --log-commits`, and compares Spike against the ISS and the
 RTL with `tools/spike_compare.py`: PC, encoding, privilege and integer
 register writes from the ELF entry on. CSR reads whose values are
 implementation-defined (misa, `m*id`, cycle/time, PMP, triggers, mip) and RTL

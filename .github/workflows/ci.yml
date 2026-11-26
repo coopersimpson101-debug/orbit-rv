@@ -9,7 +9,9 @@ permissions:
 
 env:
   RISCV_TESTS_COMMIT: 1b3f8bd665d79e5985753a558dae4e3718e2edc8
-  SPIKE_TAG: v1.1.0
+  # riscv-isa-sim master merge of 2026-11-21 (its own CI green on ubuntu-24.04). The last
+  # release tag, v1.1.0 (2022), no longer compiles with current GCC (missing <cstdint>).
+  SPIKE_COMMIT: 982f078e65ab52d5d9a91248c2178f5399df7783
 
 jobs:
   test:
@@ -88,18 +90,20 @@ jobs:
         uses: actions/cache@v4
         with:
           path: ~/spike
-          key: spike-${{ runner.os }}-${{ env.SPIKE_TAG }}
+          key: spike-${{ runner.os }}-${{ env.SPIKE_COMMIT }}
 
       - name: Build Spike from the official riscv-isa-sim source
         if: steps.spike-cache.outputs.cache-hit != 'true'
         run: |
           sudo apt-get update
           sudo apt-get install -y device-tree-compiler build-essential
-          git clone --depth 1 --branch "$SPIKE_TAG" https://github.com/riscv-software-src/riscv-isa-sim spike-src
+          git init -q spike-src
+          git -C spike-src fetch --depth 1 https://github.com/riscv-software-src/riscv-isa-sim "$SPIKE_COMMIT"
+          git -C spike-src checkout -q FETCH_HEAD
+          test "$(git -C spike-src rev-parse HEAD)" = "$SPIKE_COMMIT"
           mkdir spike-src/build
           cd spike-src/build
-          # --enable-commitlog is needed by older releases and ignored by newer ones
-          ../configure --prefix="$HOME/spike" --enable-commitlog
+          ../configure --prefix="$HOME/spike"
           make -j"$(nproc)"
           make install
 
