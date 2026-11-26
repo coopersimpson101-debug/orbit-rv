@@ -50,6 +50,28 @@ MUST_MATCH = re.compile(r"^(rv64(?!mi-p-breakpoint)|bench-(?!irqtest))")
 SPIKE_TIMEOUT = 300
 
 
+INSTRET_CSRS = {0xB02, 0xC02}  # minstret, instret
+
+
+def is_instret_read(c: Commit) -> bool:
+    return (c.insn & 0x7F) == 0x73 and (c.insn >> 12) & 7 != 0 and (c.insn >> 20) in INSTRET_CSRS
+
+
+def boot_rom_commits(lines, start_pc: int) -> int:
+    """Commits Spike retires before the first one at the ELF entry (its reset ROM at 0x1000).
+    Spike counts them in minstret; orbit-rv and the ISS start at the entry with minstret = 0.
+    Derived from each log, never assumed."""
+    from orbit_rv.commitlog import _COMMIT
+    n = 0
+    for line in lines:
+        m = _COMMIT.search(line)
+        if m:
+            if int(m.group(2), 16) == start_pc:
+                return n
+            n += 1
+    return n
+
+
 def masked(c: Commit) -> Commit:
     op, f3, csr = c.insn & 0x7F, (c.insn >> 12) & 7, c.insn >> 20
     if op == 0x73 and f3 and csr in IMPL_DEFINED_CSRS:
@@ -69,7 +91,8 @@ def _sc_resync(seq: list[Commit], k: int, limit: int = 256) -> int | None:
     return None
 
 
-def compare(ref: list[Commit], dut: list[Commit], nd: set[int] | None = None) -> tuple[bool, int, str]:
+def compare(ref: list[Commit], dut: list[Commit], nd: set[int] | None = None,
+            ref_instret_offset: int = 0) -> tuple[bool, int, str]:
     """Commit-by-commit compare. One architecturally allowed difference is tolerated:
     an SC may fail spuriously (Spike drops the reservation at its hart-interleave
     boundary every few thousand instructions). If one side's SC fails where the other's
@@ -79,6 +102,10 @@ def compare(ref: list[Commit], dut: list[Commit], nd: set[int] | None = None) ->
     resyncs = 0
     while i < len(ref) and j < len(dut):
         a, b = masked(ref[i]), masked(dut[j])
+        if ref_instret_offset and is_instret_read(a) and a.writes:
+            # Spike's minstret includes its reset-ROM instructions (boot_rom_commits)
+            a = Commit(a.priv, a.pc, a.insn,
+                       {r: (v - ref_instret_offset) & ((1 << 64) - 1) for r, v in a.writes.items()})
         if nd and j in nd:
             a, b = Commit(a.priv, a.pc, a.insn, {}), Commit(b.priv, b.pc, b.insn, {})
         if (a.pc, a.insn, a.priv, a.writes) != (b.pc, b.insn, b.priv, b.writes):
@@ -106,8 +133,8 @@ ISA_STRINGS = ["rv64ima_zicsr_zifencei_zicntr_zihpm", "rv64ima_zicsr_zifencei", 
 _isa: list[str] = []
 
 
-def run_spike(spike: str, elf: Path, td: Path) -> list[Commit] | None:
-    """Spike's commit log, or None if Spike timed out."""
+def run_spike(spike: str, elf: Path, td: Path) -> tuple[list[Commit], int] | None:
+    """(Spike's commits from the ELF entry on, reset-ROM commits before it), or None on timeout."""
     log = td / (elf.name + ".spike.log")
     for isa in (_isa or ISA_STRINGS):
         if log.exists():
@@ -127,8 +154,10 @@ def run_spike(spike: str, elf: Path, td: Path) -> list[Commit] | None:
             break
         print(f"spike rejected --isa={isa}: {r.stderr.strip()[:200]}", flush=True)
     if not log.exists():
-        return []
-    return parse_lines(log.read_text(errors="replace").splitlines(), start_pc=load_elf(elf).entry)
+        return [], 0
+    lines = log.read_text(errors="replace").splitlines()
+    entry = load_elf(elf).entry
+    return parse_lines(lines, start_pc=entry), boot_rom_commits(lines, entry)
 
 
 def run_iss(elf: Path) -> list[Commit]:
@@ -164,6 +193,7 @@ def main(argv=None) -> int:
     if a.bench:
         progs += [("bench-" + p.stem, p) for p in sorted(a.bench.glob("*.riscv"))]
     rows, results, bad = [], {}, []
+    boots: dict[str, int] = {}
     with tempfile.TemporaryDirectory() as td:
         for name, elf in progs:
             if name in EXPECTED_FAIL:
@@ -171,7 +201,9 @@ def main(argv=None) -> int:
                             + " expected failure on orbit-rv (see README)")
                 print(rows[-1], flush=True)
                 continue
-            spike = run_spike(a.spike, elf, Path(td))
+            got = run_spike(a.spike, elf, Path(td))
+            spike, boot = got if got is not None else (None, 0)
+            boots[name] = boot
             if spike is None:
                 results[name] = {"iss": False, "iss_commits": 0,
                                  "iss_msg": f"spike timed out after {SPIKE_TIMEOUT} s"}
@@ -181,15 +213,16 @@ def main(argv=None) -> int:
                             + ("- |" if a.rtl else "") + f" spike timed out after {SPIKE_TIMEOUT} s")
                 print(rows[-1], flush=True)
                 continue
-            ok_i, n_i, msg_i = compare(spike, run_iss(elf))
+            ok_i, n_i, msg_i = compare(spike, run_iss(elf), ref_instret_offset=boot)
             r = {"iss": ok_i, "iss_commits": n_i, "iss_msg": msg_i}
             if a.rtl and name.startswith("rv64"):
                 # Benchmarks read mcycle and compute with it, so their RTL values legitimately
                 # differ from Spike's after the first counter read; the RTL is checked against
                 # the ISS (with those reads replayed) by tools/run_riscv_tests.py / perf_table.py.
                 rtl, nd = run_rtl(elf)
-                ok_r, n_r, msg_r = compare(spike, rtl, nd)
+                ok_r, n_r, msg_r = compare(spike, rtl, nd, ref_instret_offset=boot)
                 r.update(rtl=ok_r, rtl_commits=n_r, rtl_msg=msg_r)
+            r["spike_boot_rom_commits"] = boot
             results[name] = r
             must = bool(MUST_MATCH.match(name))
             if must and not (r["iss"] and r.get("rtl", True)):
@@ -205,7 +238,13 @@ def main(argv=None) -> int:
     head += "|---|---|---|" + ("---|" if a.rtl else "") + "---\n"
     total = len(results)
     ok = sum(1 for r in results.values() if r["iss"] and r.get("rtl", True))
-    a.out.write_text(encoding="utf-8", data=f"## Spike lockstep\n\n{ok}/{total} programs match.\n\n" + head + "\n".join(rows) + "\n")
+    bset = sorted(set(boots.values()))
+    boot_note = (f"Spike retired {', '.join(map(str, bset))} reset-ROM instruction(s) before the ELF "
+                 "entry (counted from each log); its minstret/instret reads are compared after "
+                 "subtracting that per-program count.")
+    a.out.write_text(encoding="utf-8", data=f"## Spike lockstep\n\n{ok}/{total} programs match.\n\n"
+                     + boot_note + "\n\n" + head + "\n".join(rows) + "\n")
+    print(boot_note)
     a.json.write_text(json.dumps(results, indent=1))
     print(f"{ok}/{total} programs match; must-match failures: {bad or 'none'}")
     return 1 if bad else 0

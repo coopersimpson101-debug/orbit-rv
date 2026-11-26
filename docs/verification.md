@@ -79,6 +79,17 @@ present (FS is only required to be read-only zero with neither F nor S-mode);
 orbit-rv now implements FS as writable in both the ISS and the RTL, matching
 Spike, and the riscv-tests lockstep and the orbit-os boot were re-run.
 
+The second run matched every must-match riscv-test; the benchmarks all
+diverged at their first `csrr minstret`, with Spike exactly 5 higher. Spike
+starts at its reset ROM (0x1000), which retires a few instructions before
+jumping to the ELF entry, and they count in `minstret`; orbit-rv and the ISS
+reset straight to the entry with `minstret = 0`, and the comparison starts
+at the entry. Both resets are legitimate, so `spike_compare.py` counts the
+commits before the first entry-PC commit in each Spike log (not a constant)
+and subtracts that count from Spike's `minstret`/`instret` reads before
+comparing; the count is printed in the report. `mcycle`/`cycle`/`time`
+reads stay unconverted and unchecked (implementation-defined), as before.
+
 Spike could not be run on the Windows development machine: the
 script's plumbing was exercised locally only with the ISS standing in for
 Spike, so the real outcome is whatever CI reports.
