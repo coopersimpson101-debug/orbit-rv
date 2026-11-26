@@ -15,10 +15,10 @@ jobs:
   verilog-and-results:
     runs-on: ubuntu-24.04
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
         with:
           ref: ${{ github.event.inputs.tag || github.ref }}
-      - uses: actions/setup-python@v5
+      - uses: actions/setup-python@v7
         with: { python-version: "3.12" }
       - run: pip install -e ".[dev]"
       - name: Verilog netlists of the SoC
@@ -37,7 +37,7 @@ jobs:
           python tools/build_riscv_tests.py --src build/riscv-tests-src --out build/riscv-tests
           python tools/build_benchmarks.py --src build/riscv-tests-src --out build/bench
       - name: Cache the CXXRTL simulator
-        uses: actions/cache@v4
+        uses: actions/cache@v6
         with:
           path: build/sim
           key: cxxrtl-${{ runner.os }}-${{ hashFiles('orbit_rv/rtl/*.py', 'orbit_rv/sim/tb.cc', 'orbit_rv/sim/__init__.py', 'orbit_rv/memmap.py') }}
@@ -47,7 +47,7 @@ jobs:
         run: python tools/run_riscv_tests.py --dir build/riscv-tests --sim rtl --lockstep --json dist/riscv-tests-rtl.json
       - name: IPC / cache / branch-prediction table (RTL simulation)
         run: python tools/perf_table.py --bench build/bench --out dist/perf.json
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v7
         with:
           name: verilog-and-results
           path: dist/
@@ -55,10 +55,10 @@ jobs:
   fpga:
     runs-on: ubuntu-24.04
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
         with:
           ref: ${{ github.event.inputs.tag || github.ref }}
-      - uses: actions/setup-python@v5
+      - uses: actions/setup-python@v7
         with: { python-version: "3.12" }
       - run: pip install -e ".[dev,fpga]"
       - name: ULX3S 85F synthesis, place-and-route and timing report (empty RAM image)
@@ -67,7 +67,7 @@ jobs:
           mkdir -p dist
           cp build/fpga/report.json dist/fpga-report.json
           cp build/fpga/nextpnr.log dist/fpga-nextpnr.log
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v7
         with:
           name: fpga
           path: dist/
@@ -76,14 +76,14 @@ jobs:
     needs: [verilog-and-results, fpga]
     runs-on: ubuntu-24.04
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
         with:
           ref: ${{ github.event.inputs.tag || github.ref }}
-      - uses: actions/download-artifact@v4
+      - uses: actions/download-artifact@v8
         with:
           path: dist
           merge-multiple: true
-      - uses: softprops/action-gh-release@v2
+      - uses: softprops/action-gh-release@v3
         with:
           tag_name: ${{ github.event.inputs.tag || github.ref_name }}
           body_path: .github/release/${{ github.event.inputs.tag || github.ref_name }}.md
