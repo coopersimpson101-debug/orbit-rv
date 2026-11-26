@@ -57,6 +57,10 @@ def main(argv=None) -> int:
                    if p.is_file() and p.name.startswith("rv64") and "." not in p.name
                    and a.filter in p.name)
     fn = run_iss if a.sim == "iss" else functools.partial(run_rtl, lockstep=a.lockstep)
+    if a.sim == "rtl":
+        # build (or reuse) the simulator once, before the worker processes need it
+        from orbit_rv.sim import build_sim
+        print(f"simulator: {build_sim()}", flush=True)
     results = {}
     with cf.ProcessPoolExecutor(a.j) as ex:
         futs = {ex.submit(fn, str(p)): p.name for p in tests}

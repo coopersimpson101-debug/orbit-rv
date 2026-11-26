@@ -26,15 +26,27 @@ jobs:
           mkdir -p dist
           python tools/export_verilog.py --out dist/orbit_rv_soc.v
           python tools/export_verilog.py --fpga-ram --out dist/orbit_rv_soc_bram.v
-      - name: riscv-tests + IPC results from the RTL
+      # Same steps, inputs and simulator cache as the CI "test" job.
+      - name: Fetch riscv-tests (pinned)
         run: |
           git clone https://github.com/riscv-software-src/riscv-tests build/riscv-tests-src
           git -C build/riscv-tests-src checkout "$RISCV_TESTS_COMMIT"
           git -C build/riscv-tests-src submodule update --init env
+      - name: Build riscv-tests and benchmarks with zig cc
+        run: |
           python tools/build_riscv_tests.py --src build/riscv-tests-src --out build/riscv-tests
           python tools/build_benchmarks.py --src build/riscv-tests-src --out build/bench
-          python tools/run_riscv_tests.py --dir build/riscv-tests --sim rtl --lockstep --json dist/riscv-tests-rtl.json
-          python tools/perf_table.py --bench build/bench --out dist/perf.json
+      - name: Cache the CXXRTL simulator
+        uses: actions/cache@v4
+        with:
+          path: build/sim
+          key: cxxrtl-${{ runner.os }}-${{ hashFiles('orbit_rv/rtl/*.py', 'orbit_rv/sim/tb.cc', 'orbit_rv/sim/__init__.py', 'orbit_rv/memmap.py') }}
+      - name: Build the CXXRTL simulator (once, before any parallel runs)
+        run: python -c "from orbit_rv.sim import build_sim; print(build_sim())"
+      - name: riscv-tests on the RTL, every commit checked against the ISS
+        run: python tools/run_riscv_tests.py --dir build/riscv-tests --sim rtl --lockstep --json dist/riscv-tests-rtl.json
+      - name: IPC / cache / branch-prediction table (RTL simulation)
+        run: python tools/perf_table.py --bench build/bench --out dist/perf.json
       - uses: actions/upload-artifact@v4
         with:
           name: verilog-and-results

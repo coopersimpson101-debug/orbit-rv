@@ -12,7 +12,9 @@ import json
 import os
 import subprocess
 import sys
+import shutil
 import tempfile
+import uuid
 from pathlib import Path
 
 from .. import memmap as mm
@@ -26,7 +28,7 @@ TB = Path(__file__).resolve().parent / "tb.cc"
 
 def _src_hash(ram_size: int, extra: str = "") -> str:
     h = hashlib.sha256()
-    for p in sorted(RTL_DIR.glob("*.py")) + [TB, Path(mm.__file__)]:
+    for p in sorted(RTL_DIR.glob("*.py")) + [TB, Path(__file__), Path(mm.__file__)]:  # sources + build flags
         h.update(p.read_bytes())
     h.update(f"{ram_size}{extra}".encode())
     return h.hexdigest()[:12]
@@ -54,8 +56,13 @@ def build_sim(ram_size: int = mm.RAM_SIZE_SIM, verbose: bool = False, **soc_kw) 
     if exe.exists():
         return exe
     BUILD.mkdir(parents=True, exist_ok=True)
-    work = BUILD / f"work-{key}"
-    work.mkdir(exist_ok=True)
+    # Race-safe: several worker processes may build at once (e.g. a process pool started before
+    # the simulator exists). Each uses its own work dir and output name, and the finished binary
+    # is moved into place atomically, so nobody reads a half-written soc.il/soc.cc or executable.
+    tag = f"{os.getpid()}-{uuid.uuid4().hex[:6]}"
+    work = BUILD / f"work-{key}-{tag}"
+    work.mkdir()
+    tmp_exe = exe.with_name(f"{exe.stem}.{tag}.tmp{exe.suffix}")
     soc = SoC(ram_size=ram_size, external_ram=True, **soc_kw)
     il = work / "soc.il"
     il.write_text(rtlil.convert(soc, name="top", ports=soc.ports()), newline="\n")
@@ -71,12 +78,19 @@ def build_sim(ram_size: int = mm.RAM_SIZE_SIM, verbose: bool = False, **soc_kw) 
     # -mcpu=baseline: zig targets the build machine's CPU by default, and CI caches this binary
     # across runners with different CPUs (an AVX-512 build crashes with SIGILL on an older runner).
     cmd = [sys.executable, "-m", "ziglang", "c++", "-std=c++17", "-O2", "-mcpu=baseline", "-fbracket-depth=4096",
-           f"-I{cxxrtl_include()}", f"-I{work}", str(tb), "-o", str(exe)]
+           f"-I{cxxrtl_include()}", f"-I{work}", str(tb), "-o", str(tmp_exe)]
     if verbose:
         print(" ".join(cmd))
     r = subprocess.run(cmd, capture_output=True, text=True)
     if r.returncode:
         raise RuntimeError("C++ build of the CXXRTL simulator failed:\n" + r.stderr[-4000:])
+    if exe.exists():          # another process won the race; keep its binary
+        tmp_exe.unlink()
+    else:
+        os.replace(tmp_exe, exe)
+    for extra in BUILD.glob(f"{exe.stem}.{tag}.tmp*"):  # e.g. the .pdb zig writes on Windows
+        extra.unlink(missing_ok=True)
+    shutil.rmtree(work, ignore_errors=True)
     return exe
 
 

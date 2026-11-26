@@ -85,6 +85,14 @@ jobs:
           python -m pip install --upgrade pip
           pip install -e ".[dev]"
 
+      # Spike runs dtc (device-tree-compiler) at start-up to build its device tree, so it is a
+      # run-time dependency: install it on every run, also when the Spike build is a cache hit.
+      - name: Install Spike's run-time dependency (dtc)
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y device-tree-compiler
+          dtc --version
+
       - name: Cache Spike build
         id: spike-cache
         uses: actions/cache@v4
@@ -95,8 +103,7 @@ jobs:
       - name: Build Spike from the official riscv-isa-sim source
         if: steps.spike-cache.outputs.cache-hit != 'true'
         run: |
-          sudo apt-get update
-          sudo apt-get install -y device-tree-compiler build-essential
+          sudo apt-get install -y build-essential
           git init -q spike-src
           git -C spike-src fetch --depth 1 https://github.com/riscv-software-src/riscv-isa-sim "$SPIKE_COMMIT"
           git -C spike-src checkout -q FETCH_HEAD
