@@ -1,0 +1,53 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 980 988" width="980" height="988">
+<rect width="980" height="988" rx="10" fill="#0d1117" stroke="#30363d"/>
+<circle cx="22" cy="20" r="6" fill="#ff5f56"/><circle cx="42" cy="20" r="6" fill="#ffbd2e"/><circle cx="62" cy="20" r="6" fill="#27c93f"/>
+<text x="490.0" y="25" text-anchor="middle" font-family="ui-monospace,SFMono-Regular,Menlo,Consolas,monospace" font-size="13" fill="#8b949e">UART · orbit-os on the orbit-rv RTL (CXXRTL simulation, 25 MHz model, 115200 8N1)</text>
+<text x="18" y="56" font-family="ui-monospace,SFMono-Regular,Menlo,Consolas,monospace" font-size="13.5" fill="#79c0ff" xml:space="preserve">OrbitOS v0.1.0 (rv64) - hobby RISC-V kernel</text>
+<text x="18" y="75" font-family="ui-monospace,SFMono-Regular,Menlo,Consolas,monospace" font-size="13.5" fill="#7ee787" xml:space="preserve">[boot] hart 0 entered in M-mode, SBI shim installed, now in S-mode, dtb=0x0, image 0x80000000-0x8001d000</text>
+<text x="18" y="94" font-family="ui-monospace,SFMono-Regular,Menlo,Consolas,monospace" font-size="13.5" fill="#7ee787" xml:space="preserve">[boot] ISA rv64ima (misa 0x8000000000141101)</text>
+<text x="18" y="113" font-family="ui-monospace,SFMono-Regular,Menlo,Consolas,monospace" font-size="13.5" fill="#7ee787" xml:space="preserve">[fdt] no valid device tree at 0x0; using rv64 defaults</text>
+<text x="18" y="132" font-family="ui-monospace,SFMono-Regular,Menlo,Consolas,monospace" font-size="13.5" fill="#7ee787" xml:space="preserve">[boot] RAM 0x80000000 + 256 KiB (board default)</text>
+<text x="18" y="151" font-family="ui-monospace,SFMono-Regular,Menlo,Consolas,monospace" font-size="13.5" fill="#7ee787" xml:space="preserve">[mmu] enabled: Sv39 identity map, W^X kernel sections at 4K, devices RW, 5 tables</text>
+<text x="18" y="170" font-family="ui-monospace,SFMono-Regular,Menlo,Consolas,monospace" font-size="13.5" fill="#7ee787" xml:space="preserve">[mm] buddy: 34 pages free (136 KiB) at [0x8001e000, 0x80040000), 0 reserved range(s)</text>
+<text x="18" y="189" font-family="ui-monospace,SFMono-Regular,Menlo,Consolas,monospace" font-size="13.5" fill="#7ee787" xml:space="preserve">[mmu] higher-half alias self-test: OK</text>
+<text x="18" y="208" font-family="ui-monospace,SFMono-Regular,Menlo,Consolas,monospace" font-size="13.5" fill="#7ee787" xml:space="preserve">[plic] PLIC at 0xc000000, context 1 (hart 0 S-mode), sources 1-31</text>
+<text x="18" y="227" font-family="ui-monospace,SFMono-Regular,Menlo,Consolas,monospace" font-size="13.5" fill="#7ee787" xml:space="preserve">[timer] 100 Hz tick via SBI set_timer (timebase 10000000 Hz, 100000 ticks/interval)</text>
+<text x="18" y="246" font-family="ui-monospace,SFMono-Regular,Menlo,Consolas,monospace" font-size="13.5" fill="#7ee787" xml:space="preserve">[uart] RX interrupt driven</text>
+<text x="18" y="265" font-family="ui-monospace,SFMono-Regular,Menlo,Consolas,monospace" font-size="13.5" fill="#7ee787" xml:space="preserve">[boot] boot complete, enabling interrupts</text>
+<text x="18" y="284" font-family="ui-monospace,SFMono-Regular,Menlo,Consolas,monospace" font-size="13.5" fill="#e6edf3" xml:space="preserve"></text>
+<text x="18" y="303" font-family="ui-monospace,SFMono-Regular,Menlo,Consolas,monospace" font-size="13.5" fill="#79c0ff" xml:space="preserve">OrbitOS shell - type &#x27;help&#x27;</text>
+<text x="18" y="322" font-family="ui-monospace,SFMono-Regular,Menlo,Consolas,monospace" font-size="13.5" fill="#E879F9" xml:space="preserve">orbit&gt; help</text>
+<text x="18" y="341" font-family="ui-monospace,SFMono-Regular,Menlo,Consolas,monospace" font-size="13.5" fill="#e6edf3" xml:space="preserve">  help      list commands</text>
+<text x="18" y="360" font-family="ui-monospace,SFMono-Regular,Menlo,Consolas,monospace" font-size="13.5" fill="#e6edf3" xml:space="preserve">  info      board/platform details from DTB</text>
+<text x="18" y="379" font-family="ui-monospace,SFMono-Regular,Menlo,Consolas,monospace" font-size="13.5" fill="#6e7681" xml:space="preserve">  [... 10 more lines of help elided here ...]</text>
+<text x="18" y="398" font-family="ui-monospace,SFMono-Regular,Menlo,Consolas,monospace" font-size="13.5" fill="#e6edf3" xml:space="preserve">  demos: counter mutex pc spin fault user ufault</text>
+<text x="18" y="417" font-family="ui-monospace,SFMono-Regular,Menlo,Consolas,monospace" font-size="13.5" fill="#E879F9" xml:space="preserve">orbit&gt; ps</text>
+<text x="18" y="436" font-family="ui-monospace,SFMono-Regular,Menlo,Consolas,monospace" font-size="13.5" fill="#e6edf3" xml:space="preserve">TID  NAME             PRIO  STATE     MODE  TICKS</text>
+<text x="18" y="455" font-family="ui-monospace,SFMono-Regular,Menlo,Consolas,monospace" font-size="13.5" fill="#e6edf3" xml:space="preserve">0    idle             7     ready     S     1</text>
+<text x="18" y="474" font-family="ui-monospace,SFMono-Regular,Menlo,Consolas,monospace" font-size="13.5" fill="#e6edf3" xml:space="preserve">1    shell            1     running   S     6  &lt;- you</text>
+<text x="18" y="493" font-family="ui-monospace,SFMono-Regular,Menlo,Consolas,monospace" font-size="13.5" fill="#E879F9" xml:space="preserve">orbit&gt; spawn spin</text>
+<text x="18" y="512" font-family="ui-monospace,SFMono-Regular,Menlo,Consolas,monospace" font-size="13.5" fill="#E879F9" xml:space="preserve">orbit&gt; [spin-A] done without yielding; other thread ran meanwhile -&gt; preempted: yes</text>
+<text x="18" y="531" font-family="ui-monospace,SFMono-Regular,Menlo,Consolas,monospace" font-size="13.5" fill="#7ee787" xml:space="preserve">[sched] thread 2 (spin-A) exited with code 0</text>
+<text x="18" y="550" font-family="ui-monospace,SFMono-Regular,Menlo,Consolas,monospace" font-size="13.5" fill="#7ee787" xml:space="preserve">[spin-B] done without yielding; other thread ran meanwhile -&gt; preempted: yes</text>
+<text x="18" y="569" font-family="ui-monospace,SFMono-Regular,Menlo,Consolas,monospace" font-size="13.5" fill="#e6edf3" xml:space="preserve">spawn user</text>
+<text x="18" y="588" font-family="ui-monospace,SFMono-Regular,Menlo,Consolas,monospace" font-size="13.5" fill="#E879F9" xml:space="preserve">orbit&gt; [user] hello from U-mode, pid 4</text>
+<text x="18" y="607" font-family="ui-monospace,SFMono-Regular,Menlo,Consolas,monospace" font-size="13.5" fill="#7ee787" xml:space="preserve">[user] tick 1 (sleep 100 ms via ecall)</text>
+<text x="18" y="626" font-family="ui-monospace,SFMono-Regular,Menlo,Consolas,monospace" font-size="13.5" fill="#7ee787" xml:space="preserve">[sched] thread 3 (spin-B) exited with code 0</text>
+<text x="18" y="645" font-family="ui-monospace,SFMono-Regular,Menlo,Consolas,monospace" font-size="13.5" fill="#7ee787" xml:space="preserve">[user] tick 2 (sleep 100 ms via ecall)</text>
+<text x="18" y="664" font-family="ui-monospace,SFMono-Regular,Menlo,Consolas,monospace" font-size="13.5" fill="#7ee787" xml:space="preserve">[user] tick 3 (sleep 100 ms via ecall)</text>
+<text x="18" y="683" font-family="ui-monospace,SFMono-Regular,Menlo,Consolas,monospace" font-size="13.5" fill="#7ee787" xml:space="preserve">[user] bad pointer correctly rejected with -EFAULT</text>
+<text x="18" y="702" font-family="ui-monospace,SFMono-Regular,Menlo,Consolas,monospace" font-size="13.5" fill="#7ee787" xml:space="preserve">[user] exiting with code 42</text>
+<text x="18" y="721" font-family="ui-monospace,SFMono-Regular,Menlo,Consolas,monospace" font-size="13.5" fill="#7ee787" xml:space="preserve">[sched] thread 4 (user) exited with code 42</text>
+<text x="18" y="740" font-family="ui-monospace,SFMono-Regular,Menlo,Consolas,monospace" font-size="13.5" fill="#e6edf3" xml:space="preserve">spawn ufault</text>
+<text x="18" y="759" font-family="ui-monospace,SFMono-Regular,Menlo,Consolas,monospace" font-size="13.5" fill="#E879F9" xml:space="preserve">orbit&gt; [user] about to read kernel memory from U-mode...</text>
+<text x="18" y="778" font-family="ui-monospace,SFMono-Regular,Menlo,Consolas,monospace" font-size="13.5" fill="#e6edf3" xml:space="preserve"></text>
+<text x="18" y="797" font-family="ui-monospace,SFMono-Regular,Menlo,Consolas,monospace" font-size="13.5" fill="#e6edf3" xml:space="preserve">*** exception: load page fault in thread 5 (ufault)</text>
+<text x="18" y="816" font-family="ui-monospace,SFMono-Regular,Menlo,Consolas,monospace" font-size="13.5" fill="#e6edf3" xml:space="preserve">    scause=0xd load page fault from U-mode, addr 0x8000d010</text>
+<text x="18" y="835" font-family="ui-monospace,SFMono-Regular,Menlo,Consolas,monospace" font-size="13.5" fill="#e6edf3" xml:space="preserve">    sepc=0x8000106c  stval=0x8000d010  sstatus=0x200000020</text>
+<text x="18" y="854" font-family="ui-monospace,SFMono-Regular,Menlo,Consolas,monospace" font-size="13.5" fill="#e6edf3" xml:space="preserve">    -&gt; killing user task 5</text>
+<text x="18" y="873" font-family="ui-monospace,SFMono-Regular,Menlo,Consolas,monospace" font-size="13.5" fill="#7ee787" xml:space="preserve">[sched] thread 5 (ufault) exited with code -1</text>
+<text x="18" y="892" font-family="ui-monospace,SFMono-Regular,Menlo,Consolas,monospace" font-size="13.5" fill="#e6edf3" xml:space="preserve">uptime</text>
+<text x="18" y="911" font-family="ui-monospace,SFMono-Regular,Menlo,Consolas,monospace" font-size="13.5" fill="#e6edf3" xml:space="preserve">up 0.581 s (56 ticks at 100 Hz, 43 context switches)</text>
+<text x="18" y="930" font-family="ui-monospace,SFMono-Regular,Menlo,Consolas,monospace" font-size="13.5" fill="#E879F9" xml:space="preserve">orbit&gt; poweroff</text>
+<text x="18" y="949" font-family="ui-monospace,SFMono-Regular,Menlo,Consolas,monospace" font-size="13.5" fill="#e6edf3" xml:space="preserve">powering off via SBI SRST shutdown...</text>
+</svg>

@@ -1,0 +1,15 @@
+name: Feature request
+description: Suggest an extension, a microarchitecture change or a tool
+labels: [enhancement]
+body:
+  - type: textarea
+    id: what
+    attributes:
+      label: What should orbit-rv do?
+    validations:
+      required: true
+  - type: textarea
+    id: why
+    attributes:
+      label: Why, and how would we verify it?
+      description: Which tests, lockstep checks or measurements would show it works?

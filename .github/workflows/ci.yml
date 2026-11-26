@@ -1,0 +1,160 @@
+name: CI
+
+on:
+  push:
+  pull_request:
+
+permissions:
+  contents: read
+
+env:
+  RISCV_TESTS_COMMIT: 1b3f8bd665d79e5985753a558dae4e3718e2edc8
+  SPIKE_TAG: v1.1.0
+
+jobs:
+  test:
+    name: unit tests, riscv-tests on ISS + RTL (lockstep), IPC
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install Python tooling (Amaranth, YoWASP Yosys, zig)
+        run: |
+          python -m pip install --upgrade pip
+          pip install -e ".[dev]"
+
+      - name: Fetch riscv-tests (pinned)
+        run: |
+          git clone https://github.com/riscv-software-src/riscv-tests build/riscv-tests-src
+          git -C build/riscv-tests-src checkout "$RISCV_TESTS_COMMIT"
+          git -C build/riscv-tests-src submodule update --init env
+
+      - name: Build riscv-tests and benchmarks with zig cc
+        run: |
+          python tools/build_riscv_tests.py --src build/riscv-tests-src --out build/riscv-tests
+          python tools/build_benchmarks.py --src build/riscv-tests-src --out build/bench
+
+      - name: Cache the CXXRTL simulator
+        uses: actions/cache@v4
+        with:
+          path: build/sim
+          key: cxxrtl-${{ runner.os }}-${{ hashFiles('orbit_rv/rtl/*.py', 'orbit_rv/sim/tb.cc', 'orbit_rv/memmap.py') }}
+
+      - name: Unit tests + RTL simulation tests
+        env:
+          ORBIT_RV_RISCV_TESTS: build/riscv-tests
+          ORBIT_RV_BENCH: build/bench
+        run: python -m pytest -v tests
+
+      - name: riscv-tests on the golden ISS
+        run: python tools/run_riscv_tests.py --dir build/riscv-tests --sim iss --json build/iss-results.json
+
+      - name: riscv-tests on the RTL, every commit checked against the ISS
+        run: python tools/run_riscv_tests.py --dir build/riscv-tests --sim rtl --lockstep --json build/rtl-results.json
+
+      - name: IPC / cache / branch-prediction table (RTL simulation)
+        run: python tools/perf_table.py --bench build/bench --out build/perf.json
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: results
+          path: |
+            build/iss-results.json
+            build/rtl-results.json
+            build/perf.json
+            build/perf.md
+
+  spike:
+    name: Spike commit-log lockstep (ISS + RTL vs Spike)
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install Python tooling
+        run: |
+          python -m pip install --upgrade pip
+          pip install -e ".[dev]"
+
+      - name: Cache Spike build
+        id: spike-cache
+        uses: actions/cache@v4
+        with:
+          path: ~/spike
+          key: spike-${{ runner.os }}-${{ env.SPIKE_TAG }}
+
+      - name: Build Spike from the official riscv-isa-sim source
+        if: steps.spike-cache.outputs.cache-hit != 'true'
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y device-tree-compiler build-essential
+          git clone --depth 1 --branch "$SPIKE_TAG" https://github.com/riscv-software-src/riscv-isa-sim spike-src
+          mkdir spike-src/build
+          cd spike-src/build
+          # --enable-commitlog is needed by older releases and ignored by newer ones
+          ../configure --prefix="$HOME/spike" --enable-commitlog
+          make -j"$(nproc)"
+          make install
+
+      - name: Fetch and build riscv-tests (pinned) and benchmarks
+        run: |
+          git clone https://github.com/riscv-software-src/riscv-tests build/riscv-tests-src
+          git -C build/riscv-tests-src checkout "$RISCV_TESTS_COMMIT"
+          git -C build/riscv-tests-src submodule update --init env
+          python tools/build_riscv_tests.py --src build/riscv-tests-src --out build/riscv-tests
+          python tools/build_benchmarks.py --src build/riscv-tests-src --out build/bench
+
+      - name: Cache the CXXRTL simulator
+        uses: actions/cache@v4
+        with:
+          path: build/sim
+          key: cxxrtl-${{ runner.os }}-${{ hashFiles('orbit_rv/rtl/*.py', 'orbit_rv/sim/tb.cc', 'orbit_rv/memmap.py') }}
+
+      - name: Compare Spike vs ISS vs RTL commit by commit
+        run: |
+          "$HOME/spike/bin/spike" --help 2>&1 | head -3 || true
+          python tools/spike_compare.py --spike "$HOME/spike/bin/spike" \
+            --tests build/riscv-tests --bench build/bench --rtl \
+            --out build/spike-report.md --json build/spike-report.json
+          cat build/spike-report.md >> "$GITHUB_STEP_SUMMARY"
+
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: spike-report
+          path: |
+            build/spike-report.md
+            build/spike-report.json
+
+  fpga:
+    name: ECP5 synthesis + place-and-route (yowasp)
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install Python tooling
+        run: |
+          python -m pip install --upgrade pip
+          pip install -e ".[dev,fpga]"
+
+      - name: Synthesis and PnR for ULX3S 85F (empty RAM image)
+        run: python fpga/ulx3s.py --out build/fpga
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: fpga-report
+          path: |
+            build/fpga/report.json
+            build/fpga/yosys_stat.txt
+            build/fpga/nextpnr.log

@@ -1,0 +1,23 @@
+# build outputs (simulator, riscv-tests, benchmarks, FPGA runs)
+/build/
+*.o
+*.elf
+*.exe
+*.pdb
+*.bit
+*.riscv
+
+# Python
+__pycache__/
+*.pyc
+*.egg-info/
+.venv/
+venv/
+.pytest_cache/
+
+# editors / OS
+.vscode/
+.idea/
+*.swp
+.DS_Store
+Thumbs.db

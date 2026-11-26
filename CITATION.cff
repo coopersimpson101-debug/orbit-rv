@@ -1,0 +1,17 @@
+cff-version: 1.2.0
+message: "If you use this software, please cite it as below."
+title: "orbit-rv: a pipelined RV64IMA core with Sv39 MMU, caches and interrupts in Amaranth HDL"
+abstract: "A 5-stage in-order RV64IMA_Zicsr_Zifencei core with M/S/U modes, Sv39 MMU, I/D caches, a CLINT/PLIC/UART SoC, a golden ISS used for commit-by-commit lockstep, riscv-tests compliance runs, ECP5 synthesis and an orbit-os port."
+authors:
+  - name: "the orbit-rv authors"
+version: 0.1.0
+date-released: 2026-11-26
+license: MIT
+repository-code: "https://github.com/coopersimpson101-debug/orbit-rv"
+keywords:
+  - risc-v
+  - cpu
+  - fpga
+  - amaranth
+  - hdl
+  - ecp5

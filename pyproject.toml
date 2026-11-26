@@ -1,0 +1,40 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "orbit-rv"
+version = "0.1.0"
+description = "A pipelined RV64IMA core with caches, Sv39 MMU and interrupts in Amaranth HDL, a golden ISS, and an FPGA flow"
+readme = "README.md"
+license = { text = "MIT" }
+authors = [{ name = "the orbit-rv authors" }]
+requires-python = ">=3.10"
+dependencies = ["amaranth>=0.5,<0.6"]
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Intended Audience :: Education",
+    "Intended Audience :: Science/Research",
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3",
+    "Topic :: System :: Hardware",
+    "Topic :: Scientific/Engineering :: Electronic Design Automation (EDA)",
+]
+
+[project.optional-dependencies]
+dev = ["pytest>=8", "yowasp-yosys", "ziglang==0.17.1"]
+fpga = ["yowasp-yosys", "yowasp-nextpnr-ecp5"]
+
+[project.urls]
+Homepage = "https://github.com/coopersimpson101-debug/orbit-rv"
+Repository = "https://github.com/coopersimpson101-debug/orbit-rv"
+Issues = "https://github.com/coopersimpson101-debug/orbit-rv/issues"
+
+[tool.setuptools.packages.find]
+include = ["orbit_rv*"]
+
+[tool.setuptools.package-data]
+orbit_rv = ["sim/tb.cc"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]

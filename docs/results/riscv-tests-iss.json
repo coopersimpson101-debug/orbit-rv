@@ -1,0 +1,1166 @@
+{
+ "rv64mi-p-breakpoint": {
+  "code": 0,
+  "insns": 121,
+  "pass": true,
+  "secs": 0.008
+ },
+ "rv64mi-p-csr": {
+  "code": 0,
+  "insns": 246,
+  "pass": true,
+  "secs": 0.02
+ },
+ "rv64mi-p-illegal": {
+  "code": 0,
+  "insns": 358,
+  "pass": true,
+  "secs": 0.035
+ },
+ "rv64mi-p-instret_overflow": {
+  "code": 0,
+  "insns": 18446744073709551633,
+  "pass": true,
+  "secs": 0.007
+ },
+ "rv64mi-p-ld-misaligned": {
+  "code": 0,
+  "insns": 356,
+  "pass": true,
+  "secs": 0.024
+ },
+ "rv64mi-p-lh-misaligned": {
+  "code": 0,
+  "insns": 120,
+  "pass": true,
+  "secs": 0.008
+ },
+ "rv64mi-p-lw-misaligned": {
+  "code": 0,
+  "insns": 178,
+  "pass": true,
+  "secs": 0.008
+ },
+ "rv64mi-p-ma_addr": {
+  "code": 0,
+  "insns": 718,
+  "pass": true,
+  "secs": 0.037
+ },
+ "rv64mi-p-ma_fetch": {
+  "code": 0,
+  "insns": 235,
+  "pass": true,
+  "secs": 0.008
+ },
+ "rv64mi-p-mcsr": {
+  "code": 0,
+  "insns": 103,
+  "pass": true,
+  "secs": 0.008
+ },
+ "rv64mi-p-pmpaddr": {
+  "code": 1,
+  "insns": 97,
+  "pass": false,
+  "secs": 0.008
+ },
+ "rv64mi-p-sbreak": {
+  "code": 0,
+  "insns": 110,
+  "pass": true,
+  "secs": 0.008
+ },
+ "rv64mi-p-scall": {
+  "code": 0,
+  "insns": 95,
+  "pass": true,
+  "secs": 0.019
+ },
+ "rv64mi-p-sd-misaligned": {
+  "code": 0,
+  "insns": 378,
+  "pass": true,
+  "secs": 0.037
+ },
+ "rv64mi-p-sh-misaligned": {
+  "code": 0,
+  "insns": 128,
+  "pass": true,
+  "secs": 0.008
+ },
+ "rv64mi-p-sw-misaligned": {
+  "code": 0,
+  "insns": 182,
+  "pass": true,
+  "secs": 0.009
+ },
+ "rv64mi-p-zicntr": {
+  "code": 0,
+  "insns": 120,
+  "pass": true,
+  "secs": 0.007
+ },
+ "rv64si-p-csr": {
+  "code": 0,
+  "insns": 194,
+  "pass": true,
+  "secs": 0.009
+ },
+ "rv64si-p-dirty": {
+  "code": 0,
+  "insns": 202,
+  "pass": true,
+  "secs": 0.008
+ },
+ "rv64si-p-icache-alias": {
+  "code": 0,
+  "insns": 223,
+  "pass": true,
+  "secs": 0.01
+ },
+ "rv64si-p-ma_fetch": {
+  "code": 0,
+  "insns": 192,
+  "pass": true,
+  "secs": 0.008
+ },
+ "rv64si-p-sbreak": {
+  "code": 0,
+  "insns": 103,
+  "pass": true,
+  "secs": 0.007
+ },
+ "rv64si-p-scall": {
+  "code": 0,
+  "insns": 110,
+  "pass": true,
+  "secs": 0.024
+ },
+ "rv64si-p-wfi": {
+  "code": 0,
+  "insns": 91,
+  "pass": true,
+  "secs": 0.007
+ },
+ "rv64ua-p-amoadd_d": {
+  "code": 0,
+  "insns": 106,
+  "pass": true,
+  "secs": 0.013
+ },
+ "rv64ua-p-amoadd_w": {
+  "code": 0,
+  "insns": 105,
+  "pass": true,
+  "secs": 0.007
+ },
+ "rv64ua-p-amoand_d": {
+  "code": 0,
+  "insns": 105,
+  "pass": true,
+  "secs": 0.008
+ },
+ "rv64ua-p-amoand_w": {
+  "code": 0,
+  "insns": 104,
+  "pass": true,
+  "secs": 0.008
+ },
+ "rv64ua-p-amomax_d": {
+  "code": 0,
+  "insns": 104,
+  "pass": true,
+  "secs": 0.008
+ },
+ "rv64ua-p-amomax_w": {
+  "code": 0,
+  "insns": 118,
+  "pass": true,
+  "secs": 0.009
+ },
+ "rv64ua-p-amomaxu_d": {
+  "code": 0,
+  "insns": 104,
+  "pass": true,
+  "secs": 0.007
+ },
+ "rv64ua-p-amomaxu_w": {
+  "code": 0,
+  "insns": 118,
+  "pass": true,
+  "secs": 0.011
+ },
+ "rv64ua-p-amomin_d": {
+  "code": 0,
+  "insns": 104,
+  "pass": true,
+  "secs": 0.009
+ },
+ "rv64ua-p-amomin_w": {
+  "code": 0,
+  "insns": 118,
+  "pass": true,
+  "secs": 0.011
+ },
+ "rv64ua-p-amominu_d": {
+  "code": 0,
+  "insns": 104,
+  "pass": true,
+  "secs": 0.008
+ },
+ "rv64ua-p-amominu_w": {
+  "code": 0,
+  "insns": 118,
+  "pass": true,
+  "secs": 0.009
+ },
+ "rv64ua-p-amoor_d": {
+  "code": 0,
+  "insns": 103,
+  "pass": true,
+  "secs": 0.008
+ },
+ "rv64ua-p-amoor_w": {
+  "code": 0,
+  "insns": 103,
+  "pass": true,
+  "secs": 0.008
+ },
+ "rv64ua-p-amoswap_d": {
+  "code": 0,
+  "insns": 105,
+  "pass": true,
+  "secs": 0.009
+ },
+ "rv64ua-p-amoswap_w": {
+  "code": 0,
+  "insns": 104,
+  "pass": true,
+  "secs": 0.008
+ },
+ "rv64ua-p-amoxor_d": {
+  "code": 0,
+  "insns": 106,
+  "pass": true,
+  "secs": 0.008
+ },
+ "rv64ua-p-amoxor_w": {
+  "code": 0,
+  "insns": 108,
+  "pass": true,
+  "secs": 0.007
+ },
+ "rv64ua-p-lrsc": {
+  "code": 0,
+  "insns": 6281,
+  "pass": true,
+  "secs": 0.04
+ },
+ "rv64ua-v-amoadd_d": {
+  "code": 0,
+  "insns": 15003,
+  "pass": true,
+  "secs": 0.126
+ },
+ "rv64ua-v-amoadd_w": {
+  "code": 0,
+  "insns": 15002,
+  "pass": true,
+  "secs": 0.094
+ },
+ "rv64ua-v-amoand_d": {
+  "code": 0,
+  "insns": 15002,
+  "pass": true,
+  "secs": 0.101
+ },
+ "rv64ua-v-amoand_w": {
+  "code": 0,
+  "insns": 15001,
+  "pass": true,
+  "secs": 0.139
+ },
+ "rv64ua-v-amomax_d": {
+  "code": 0,
+  "insns": 15001,
+  "pass": true,
+  "secs": 0.115
+ },
+ "rv64ua-v-amomax_w": {
+  "code": 0,
+  "insns": 15015,
+  "pass": true,
+  "secs": 0.113
+ },
+ "rv64ua-v-amomaxu_d": {
+  "code": 0,
+  "insns": 15001,
+  "pass": true,
+  "secs": 0.1
+ },
+ "rv64ua-v-amomaxu_w": {
+  "code": 0,
+  "insns": 15015,
+  "pass": true,
+  "secs": 0.103
+ },
+ "rv64ua-v-amomin_d": {
+  "code": 0,
+  "insns": 15001,
+  "pass": true,
+  "secs": 0.1
+ },
+ "rv64ua-v-amomin_w": {
+  "code": 0,
+  "insns": 15015,
+  "pass": true,
+  "secs": 0.108
+ },
+ "rv64ua-v-amominu_d": {
+  "code": 0,
+  "insns": 15001,
+  "pass": true,
+  "secs": 0.1
+ },
+ "rv64ua-v-amominu_w": {
+  "code": 0,
+  "insns": 15015,
+  "pass": true,
+  "secs": 0.304
+ },
+ "rv64ua-v-amoor_d": {
+  "code": 0,
+  "insns": 15000,
+  "pass": true,
+  "secs": 0.103
+ },
+ "rv64ua-v-amoor_w": {
+  "code": 0,
+  "insns": 15000,
+  "pass": true,
+  "secs": 0.101
+ },
+ "rv64ua-v-amoswap_d": {
+  "code": 0,
+  "insns": 15002,
+  "pass": true,
+  "secs": 0.107
+ },
+ "rv64ua-v-amoswap_w": {
+  "code": 0,
+  "insns": 15001,
+  "pass": true,
+  "secs": 0.102
+ },
+ "rv64ua-v-amoxor_d": {
+  "code": 0,
+  "insns": 15003,
+  "pass": true,
+  "secs": 0.096
+ },
+ "rv64ua-v-amoxor_w": {
+  "code": 0,
+  "insns": 15005,
+  "pass": true,
+  "secs": 0.102
+ },
+ "rv64ua-v-lrsc": {
+  "code": 0,
+  "insns": 21172,
+  "pass": true,
+  "secs": 0.149
+ },
+ "rv64ui-p-add": {
+  "code": 0,
+  "insns": 507,
+  "pass": true,
+  "secs": 0.016
+ },
+ "rv64ui-p-addi": {
+  "code": 0,
+  "insns": 283,
+  "pass": true,
+  "secs": 0.022
+ },
+ "rv64ui-p-addiw": {
+  "code": 0,
+  "insns": 281,
+  "pass": true,
+  "secs": 0.009
+ },
+ "rv64ui-p-addw": {
+  "code": 0,
+  "insns": 504,
+  "pass": true,
+  "secs": 0.077
+ },
+ "rv64ui-p-and": {
+  "code": 0,
+  "insns": 556,
+  "pass": true,
+  "secs": 0.01
+ },
+ "rv64ui-p-andi": {
+  "code": 0,
+  "insns": 252,
+  "pass": true,
+  "secs": 0.01
+ },
+ "rv64ui-p-auipc": {
+  "code": 0,
+  "insns": 97,
+  "pass": true,
+  "secs": 0.008
+ },
+ "rv64ui-p-beq": {
+  "code": 0,
+  "insns": 330,
+  "pass": true,
+  "secs": 0.008
+ },
+ "rv64ui-p-bge": {
+  "code": 0,
+  "insns": 348,
+  "pass": true,
+  "secs": 0.01
+ },
+ "rv64ui-p-bgeu": {
+  "code": 0,
+  "insns": 432,
+  "pass": true,
+  "secs": 0.01
+ },
+ "rv64ui-p-blt": {
+  "code": 0,
+  "insns": 330,
+  "pass": true,
+  "secs": 0.027
+ },
+ "rv64ui-p-bltu": {
+  "code": 0,
+  "insns": 412,
+  "pass": true,
+  "secs": 0.011
+ },
+ "rv64ui-p-bne": {
+  "code": 0,
+  "insns": 330,
+  "pass": true,
+  "secs": 0.008
+ },
+ "rv64ui-p-fence_i": {
+  "code": 0,
+  "insns": 333,
+  "pass": true,
+  "secs": 0.008
+ },
+ "rv64ui-p-jal": {
+  "code": 0,
+  "insns": 94,
+  "pass": true,
+  "secs": 0.009
+ },
+ "rv64ui-p-jalr": {
+  "code": 0,
+  "insns": 154,
+  "pass": true,
+  "secs": 0.007
+ },
+ "rv64ui-p-lb": {
+  "code": 0,
+  "insns": 292,
+  "pass": true,
+  "secs": 0.015
+ },
+ "rv64ui-p-lbu": {
+  "code": 0,
+  "insns": 292,
+  "pass": true,
+  "secs": 0.012
+ },
+ "rv64ui-p-ld": {
+  "code": 0,
+  "insns": 458,
+  "pass": true,
+  "secs": 0.009
+ },
+ "rv64ui-p-ld_st": {
+  "code": 0,
+  "insns": 1454,
+  "pass": true,
+  "secs": 0.019
+ },
+ "rv64ui-p-lh": {
+  "code": 0,
+  "insns": 308,
+  "pass": true,
+  "secs": 0.009
+ },
+ "rv64ui-p-lhu": {
+  "code": 0,
+  "insns": 317,
+  "pass": true,
+  "secs": 0.01
+ },
+ "rv64ui-p-lui": {
+  "code": 0,
+  "insns": 104,
+  "pass": true,
+  "secs": 0.009
+ },
+ "rv64ui-p-lw": {
+  "code": 0,
+  "insns": 322,
+  "pass": true,
+  "secs": 0.008
+ },
+ "rv64ui-p-lwu": {
+  "code": 0,
+  "insns": 347,
+  "pass": true,
+  "secs": 0.008
+ },
+ "rv64ui-p-ma_data": {
+  "code": 668,
+  "insns": 90,
+  "pass": false,
+  "secs": 0.007
+ },
+ "rv64ui-p-or": {
+  "code": 0,
+  "insns": 574,
+  "pass": true,
+  "secs": 0.009
+ },
+ "rv64ui-p-ori": {
+  "code": 0,
+  "insns": 246,
+  "pass": true,
+  "secs": 0.009
+ },
+ "rv64ui-p-sb": {
+  "code": 0,
+  "insns": 493,
+  "pass": true,
+  "secs": 0.011
+ },
+ "rv64ui-p-sd": {
+  "code": 0,
+  "insns": 653,
+  "pass": true,
+  "secs": 0.011
+ },
+ "rv64ui-p-sh": {
+  "code": 0,
+  "insns": 546,
+  "pass": true,
+  "secs": 0.011
+ },
+ "rv64ui-p-simple": {
+  "code": 0,
+  "insns": 80,
+  "pass": true,
+  "secs": 0.007
+ },
+ "rv64ui-p-sll": {
+  "code": 0,
+  "insns": 576,
+  "pass": true,
+  "secs": 0.01
+ },
+ "rv64ui-p-slli": {
+  "code": 0,
+  "insns": 307,
+  "pass": true,
+  "secs": 0.011
+ },
+ "rv64ui-p-slliw": {
+  "code": 0,
+  "insns": 312,
+  "pass": true,
+  "secs": 0.009
+ },
+ "rv64ui-p-sllw": {
+  "code": 0,
+  "insns": 575,
+  "pass": true,
+  "secs": 0.023
+ },
+ "rv64ui-p-slt": {
+  "code": 0,
+  "insns": 498,
+  "pass": true,
+  "secs": 0.012
+ },
+ "rv64ui-p-slti": {
+  "code": 0,
+  "insns": 276,
+  "pass": true,
+  "secs": 0.009
+ },
+ "rv64ui-p-sltiu": {
+  "code": 0,
+  "insns": 276,
+  "pass": true,
+  "secs": 0.01
+ },
+ "rv64ui-p-sltu": {
+  "code": 0,
+  "insns": 508,
+  "pass": true,
+  "secs": 0.01
+ },
+ "rv64ui-p-sra": {
+  "code": 0,
+  "insns": 551,
+  "pass": true,
+  "secs": 0.009
+ },
+ "rv64ui-p-srai": {
+  "code": 0,
+  "insns": 297,
+  "pass": true,
+  "secs": 0.036
+ },
+ "rv64ui-p-sraiw": {
+  "code": 0,
+  "insns": 339,
+  "pass": true,
+  "secs": 0.009
+ },
+ "rv64ui-p-sraw": {
+  "code": 0,
+  "insns": 587,
+  "pass": true,
+  "secs": 0.013
+ },
+ "rv64ui-p-srl": {
+  "code": 0,
+  "insns": 582,
+  "pass": true,
+  "secs": 0.01
+ },
+ "rv64ui-p-srli": {
+  "code": 0,
+  "insns": 307,
+  "pass": true,
+  "secs": 0.022
+ },
+ "rv64ui-p-srliw": {
+  "code": 0,
+  "insns": 321,
+  "pass": true,
+  "secs": 0.012
+ },
+ "rv64ui-p-srlw": {
+  "code": 0,
+  "insns": 581,
+  "pass": true,
+  "secs": 0.012
+ },
+ "rv64ui-p-st_ld": {
+  "code": 0,
+  "insns": 764,
+  "pass": true,
+  "secs": 0.013
+ },
+ "rv64ui-p-sub": {
+  "code": 0,
+  "insns": 498,
+  "pass": true,
+  "secs": 0.009
+ },
+ "rv64ui-p-subw": {
+  "code": 0,
+  "insns": 496,
+  "pass": true,
+  "secs": 0.009
+ },
+ "rv64ui-p-sw": {
+  "code": 0,
+  "insns": 553,
+  "pass": true,
+  "secs": 0.021
+ },
+ "rv64ui-p-xor": {
+  "code": 0,
+  "insns": 578,
+  "pass": true,
+  "secs": 0.01
+ },
+ "rv64ui-p-xori": {
+  "code": 0,
+  "insns": 246,
+  "pass": true,
+  "secs": 0.018
+ },
+ "rv64ui-v-add": {
+  "code": 0,
+  "insns": 15189,
+  "pass": true,
+  "secs": 0.104
+ },
+ "rv64ui-v-addi": {
+  "code": 0,
+  "insns": 14965,
+  "pass": true,
+  "secs": 0.106
+ },
+ "rv64ui-v-addw": {
+  "code": 0,
+  "insns": 15186,
+  "pass": true,
+  "secs": 0.129
+ },
+ "rv64ui-v-and": {
+  "code": 0,
+  "insns": 15238,
+  "pass": true,
+  "secs": 0.118
+ },
+ "rv64ui-v-auipc": {
+  "code": 0,
+  "insns": 8208,
+  "pass": true,
+  "secs": 0.072
+ },
+ "rv64ui-v-beq": {
+  "code": 0,
+  "insns": 15012,
+  "pass": true,
+  "secs": 0.297
+ },
+ "rv64ui-v-bge": {
+  "code": 0,
+  "insns": 15030,
+  "pass": true,
+  "secs": 0.119
+ },
+ "rv64ui-v-bgeu": {
+  "code": 0,
+  "insns": 15114,
+  "pass": true,
+  "secs": 0.108
+ },
+ "rv64ui-v-blt": {
+  "code": 0,
+  "insns": 15012,
+  "pass": true,
+  "secs": 0.103
+ },
+ "rv64ui-v-bltu": {
+  "code": 0,
+  "insns": 15094,
+  "pass": true,
+  "secs": 0.356
+ },
+ "rv64ui-v-bne": {
+  "code": 0,
+  "insns": 15011,
+  "pass": true,
+  "secs": 0.125
+ },
+ "rv64ui-v-fence_i": {
+  "code": 0,
+  "insns": 15262,
+  "pass": true,
+  "secs": 0.153
+ },
+ "rv64ui-v-jal": {
+  "code": 0,
+  "insns": 8205,
+  "pass": true,
+  "secs": 0.06
+ },
+ "rv64ui-v-jalr": {
+  "code": 0,
+  "insns": 8265,
+  "pass": true,
+  "secs": 0.06
+ },
+ "rv64ui-v-lb": {
+  "code": 0,
+  "insns": 21545,
+  "pass": true,
+  "secs": 0.171
+ },
+ "rv64ui-v-lbu": {
+  "code": 0,
+  "insns": 21545,
+  "pass": true,
+  "secs": 0.389
+ },
+ "rv64ui-v-ld": {
+  "code": 0,
+  "insns": 21711,
+  "pass": true,
+  "secs": 0.147
+ },
+ "rv64ui-v-ld_st": {
+  "code": 0,
+  "insns": 29487,
+  "pass": true,
+  "secs": 0.236
+ },
+ "rv64ui-v-lh": {
+  "code": 0,
+  "insns": 21561,
+  "pass": true,
+  "secs": 0.165
+ },
+ "rv64ui-v-lhu": {
+  "code": 0,
+  "insns": 21570,
+  "pass": true,
+  "secs": 0.239
+ },
+ "rv64ui-v-lui": {
+  "code": 0,
+  "insns": 8215,
+  "pass": true,
+  "secs": 0.066
+ },
+ "rv64ui-v-lw": {
+  "code": 0,
+  "insns": 21575,
+  "pass": true,
+  "secs": 0.211
+ },
+ "rv64ui-v-lwu": {
+  "code": 0,
+  "insns": 21600,
+  "pass": true,
+  "secs": 0.166
+ },
+ "rv64ui-v-ma_data": {
+  "code": null,
+  "insns": 2001517,
+  "pass": false,
+  "secs": 22.252
+ },
+ "rv64ui-v-or": {
+  "code": 0,
+  "insns": 15256,
+  "pass": true,
+  "secs": 0.14
+ },
+ "rv64ui-v-ori": {
+  "code": 0,
+  "insns": 14928,
+  "pass": true,
+  "secs": 0.147
+ },
+ "rv64ui-v-sb": {
+  "code": 0,
+  "insns": 21955,
+  "pass": true,
+  "secs": 0.223
+ },
+ "rv64ui-v-sd": {
+  "code": 0,
+  "insns": 22115,
+  "pass": true,
+  "secs": 0.192
+ },
+ "rv64ui-v-sh": {
+  "code": 0,
+  "insns": 22008,
+  "pass": true,
+  "secs": 0.447
+ },
+ "rv64ui-v-simple": {
+  "code": 0,
+  "insns": 8191,
+  "pass": true,
+  "secs": 0.105
+ },
+ "rv64ui-v-sll": {
+  "code": 0,
+  "insns": 15258,
+  "pass": true,
+  "secs": 0.167
+ },
+ "rv64ui-v-slli": {
+  "code": 0,
+  "insns": 14989,
+  "pass": true,
+  "secs": 0.145
+ },
+ "rv64ui-v-slliw": {
+  "code": 0,
+  "insns": 14994,
+  "pass": true,
+  "secs": 0.114
+ },
+ "rv64ui-v-sllw": {
+  "code": 0,
+  "insns": 15257,
+  "pass": true,
+  "secs": 0.29
+ },
+ "rv64ui-v-slt": {
+  "code": 0,
+  "insns": 15180,
+  "pass": true,
+  "secs": 0.16
+ },
+ "rv64ui-v-slti": {
+  "code": 0,
+  "insns": 14958,
+  "pass": true,
+  "secs": 0.141
+ },
+ "rv64ui-v-sltiu": {
+  "code": 0,
+  "insns": 14958,
+  "pass": true,
+  "secs": 0.284
+ },
+ "rv64ui-v-sltu": {
+  "code": 0,
+  "insns": 15190,
+  "pass": true,
+  "secs": 0.18
+ },
+ "rv64ui-v-sra": {
+  "code": 0,
+  "insns": 15233,
+  "pass": true,
+  "secs": 0.127
+ },
+ "rv64ui-v-srai": {
+  "code": 0,
+  "insns": 14979,
+  "pass": true,
+  "secs": 0.183
+ },
+ "rv64ui-v-sraiw": {
+  "code": 0,
+  "insns": 15021,
+  "pass": true,
+  "secs": 0.16
+ },
+ "rv64ui-v-sraw": {
+  "code": 0,
+  "insns": 15269,
+  "pass": true,
+  "secs": 0.115
+ },
+ "rv64ui-v-srl": {
+  "code": 0,
+  "insns": 15264,
+  "pass": true,
+  "secs": 0.167
+ },
+ "rv64ui-v-srli": {
+  "code": 0,
+  "insns": 14989,
+  "pass": true,
+  "secs": 0.15
+ },
+ "rv64ui-v-srliw": {
+  "code": 0,
+  "insns": 15003,
+  "pass": true,
+  "secs": 0.155
+ },
+ "rv64ui-v-srlw": {
+  "code": 0,
+  "insns": 15263,
+  "pass": true,
+  "secs": 0.114
+ },
+ "rv64ui-v-st_ld": {
+  "code": 0,
+  "insns": 22226,
+  "pass": true,
+  "secs": 0.232
+ },
+ "rv64ui-v-sub": {
+  "code": 0,
+  "insns": 15180,
+  "pass": true,
+  "secs": 0.125
+ },
+ "rv64ui-v-subw": {
+  "code": 0,
+  "insns": 15178,
+  "pass": true,
+  "secs": 0.167
+ },
+ "rv64ui-v-sw": {
+  "code": 0,
+  "insns": 22015,
+  "pass": true,
+  "secs": 0.216
+ },
+ "rv64ui-v-xor": {
+  "code": 0,
+  "insns": 15260,
+  "pass": true,
+  "secs": 0.309
+ },
+ "rv64ui-v-xori": {
+  "code": 0,
+  "insns": 14928,
+  "pass": true,
+  "secs": 0.124
+ },
+ "rv64um-p-div": {
+  "code": 0,
+  "insns": 148,
+  "pass": true,
+  "secs": 0.007
+ },
+ "rv64um-p-divu": {
+  "code": 0,
+  "insns": 146,
+  "pass": true,
+  "secs": 0.007
+ },
+ "rv64um-p-divuw": {
+  "code": 0,
+  "insns": 138,
+  "pass": true,
+  "secs": 0.008
+ },
+ "rv64um-p-divw": {
+  "code": 0,
+  "insns": 141,
+  "pass": true,
+  "secs": 0.013
+ },
+ "rv64um-p-mul": {
+  "code": 0,
+  "insns": 499,
+  "pass": true,
+  "secs": 0.024
+ },
+ "rv64um-p-mulh": {
+  "code": 0,
+  "insns": 507,
+  "pass": true,
+  "secs": 0.012
+ },
+ "rv64um-p-mulhsu": {
+  "code": 0,
+  "insns": 507,
+  "pass": true,
+  "secs": 0.01
+ },
+ "rv64um-p-mulhu": {
+  "code": 0,
+  "insns": 538,
+  "pass": true,
+  "secs": 0.01
+ },
+ "rv64um-p-mulw": {
+  "code": 0,
+  "insns": 438,
+  "pass": true,
+  "secs": 0.01
+ },
+ "rv64um-p-rem": {
+  "code": 0,
+  "insns": 139,
+  "pass": true,
+  "secs": 0.007
+ },
+ "rv64um-p-remu": {
+  "code": 0,
+  "insns": 140,
+  "pass": true,
+  "secs": 0.01
+ },
+ "rv64um-p-remuw": {
+  "code": 0,
+  "insns": 135,
+  "pass": true,
+  "secs": 0.037
+ },
+ "rv64um-p-remw": {
+  "code": 0,
+  "insns": 141,
+  "pass": true,
+  "secs": 0.026
+ },
+ "rv64um-v-div": {
+  "code": 0,
+  "insns": 14830,
+  "pass": true,
+  "secs": 0.113
+ },
+ "rv64um-v-divu": {
+  "code": 0,
+  "insns": 14828,
+  "pass": true,
+  "secs": 0.164
+ },
+ "rv64um-v-divuw": {
+  "code": 0,
+  "insns": 8249,
+  "pass": true,
+  "secs": 0.101
+ },
+ "rv64um-v-divw": {
+  "code": 0,
+  "insns": 8252,
+  "pass": true,
+  "secs": 0.081
+ },
+ "rv64um-v-mul": {
+  "code": 0,
+  "insns": 15181,
+  "pass": true,
+  "secs": 0.323
+ },
+ "rv64um-v-mulh": {
+  "code": 0,
+  "insns": 15189,
+  "pass": true,
+  "secs": 0.334
+ },
+ "rv64um-v-mulhsu": {
+  "code": 0,
+  "insns": 15189,
+  "pass": true,
+  "secs": 0.147
+ },
+ "rv64um-v-mulhu": {
+  "code": 0,
+  "insns": 15220,
+  "pass": true,
+  "secs": 0.12
+ },
+ "rv64um-v-mulw": {
+  "code": 0,
+  "insns": 15120,
+  "pass": true,
+  "secs": 0.151
+ },
+ "rv64um-v-rem": {
+  "code": 0,
+  "insns": 8250,
+  "pass": true,
+  "secs": 0.096
+ },
+ "rv64um-v-remu": {
+  "code": 0,
+  "insns": 8251,
+  "pass": true,
+  "secs": 0.209
+ },
+ "rv64um-v-remuw": {
+  "code": 0,
+  "insns": 8246,
+  "pass": true,
+  "secs": 0.058
+ },
+ "rv64um-v-remw": {
+  "code": 0,
+  "insns": 8252,
+  "pass": true,
+  "secs": 0.063
+ }
+}

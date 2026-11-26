@@ -1,0 +1,29 @@
+{
+ "TRELLIS_COMB": {
+  "used": 17885,
+  "avail": 83640
+ },
+ "TRELLIS_FF": {
+  "used": 6501,
+  "avail": 83640
+ },
+ "DP16KD": {
+  "used": 134,
+  "avail": 208
+ },
+ "MULT18X18D": {
+  "used": 4,
+  "avail": 156
+ },
+ "TRELLIS_RAMW": {
+  "used": 64,
+  "avail": 10455
+ },
+ "TRELLIS_IO": {
+  "used": 11,
+  "avail": 365
+ },
+ "fmax_mhz": 27.36,
+ "target_mhz": 25.0,
+ "timing": "PASS"
+}

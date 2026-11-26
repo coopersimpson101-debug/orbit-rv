@@ -1,0 +1,40 @@
+name: Bug report
+description: The RTL, the ISS or a tool behaves incorrectly
+labels: [bug]
+body:
+  - type: textarea
+    id: what
+    attributes:
+      label: What happened?
+      description: What you expected, and what you got instead.
+    validations:
+      required: true
+  - type: textarea
+    id: repro
+    attributes:
+      label: Steps to reproduce
+      description: Exact commands from a clean checkout (and the program, if it is not in the repo).
+      render: shell
+    validations:
+      required: true
+  - type: textarea
+    id: output
+    attributes:
+      label: Output, lockstep mismatch or logs
+      render: text
+  - type: dropdown
+    id: area
+    attributes:
+      label: Area
+      options:
+        - pipeline / forwarding / hazards
+        - caches
+        - MMU / page-table walker
+        - CSRs / traps / interrupts
+        - peripherals (CLINT, PLIC, UART)
+        - golden ISS
+        - simulator / testbench
+        - FPGA flow
+        - docs
+    validations:
+      required: true

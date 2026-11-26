@@ -1,0 +1,59 @@
+
+
+OrbitOS v0.1.0 (rv64) - hobby RISC-V kernel
+[boot] hart 0 entered in M-mode, SBI shim installed, now in S-mode, dtb=0x0, image 0x80000000-0x8001d000
+[boot] ISA rv64ima (misa 0x8000000000141101)
+[fdt] no valid device tree at 0x0; using rv64 defaults
+[boot] RAM 0x80000000 + 256 KiB (board default)
+[mmu] enabled: Sv39 identity map, W^X kernel sections at 4K, devices RW, 5 tables
+[mm] buddy: 34 pages free (136 KiB) at [0x8001e000, 0x80040000), 0 reserved range(s)
+[mmu] higher-half alias self-test: OK
+[plic] PLIC at 0xc000000, context 1 (hart 0 S-mode), sources 1-31
+[timer] 100 Hz tick via SBI set_timer (timebase 10000000 Hz, 100000 ticks/interval)
+[uart] RX interrupt driven
+[boot] boot complete, enabling interrupts
+
+OrbitOS shell - type 'help'
+orbit> help
+  help      list commands
+  info      board/platform details from DTB
+  mem       memory map, page allocator, heap stats
+  ps        list threads
+  uptime    time since boot
+  ticks     timer interrupts since boot
+  echo      echo arguments
+  peek      peek <addr> [n]: read 32-bit words
+  poke      poke <addr> <val>: write a 32-bit word
+  spawn     spawn <demo>: start a demo task
+  reboot    SBI SRST cold reboot
+  poweroff  SBI SRST shutdown
+  demos: counter mutex pc spin fault user ufault
+orbit> ps
+TID  NAME             PRIO  STATE     MODE  TICKS
+0    idle             7     ready     S     1
+1    shell            1     running   S     6  <- you
+orbit> spawn spin
+orbit> [spin-A] done without yielding; other thread ran meanwhile -> preempted: yes
+[sched] thread 2 (spin-A) exited with code 0
+[spin-B] done without yielding; other thread ran meanwhile -> preempted: yes
+spawn user
+orbit> [user] hello from U-mode, pid 4
+[user] tick 1 (sleep 100 ms via ecall)
+[sched] thread 3 (spin-B) exited with code 0
+[user] tick 2 (sleep 100 ms via ecall)
+[user] tick 3 (sleep 100 ms via ecall)
+[user] bad pointer correctly rejected with -EFAULT
+[user] exiting with code 42
+[sched] thread 4 (user) exited with code 42
+spawn ufault
+orbit> [user] about to read kernel memory from U-mode...
+
+*** exception: load page fault in thread 5 (ufault)
+    scause=0xd load page fault from U-mode, addr 0x8000d010
+    sepc=0x8000106c  stval=0x8000d010  sstatus=0x200000020
+    -> killing user task 5
+[sched] thread 5 (ufault) exited with code -1
+uptime
+up 0.581 s (56 ticks at 100 Hz, 43 context switches)
+orbit> poweroff
+powering off via SBI SRST shutdown...

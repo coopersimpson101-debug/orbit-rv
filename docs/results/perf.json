@@ -1,0 +1,139 @@
+{
+ "meta": {
+  "machine": "Windows AMD64, AMD64 Family 23 Model 113 Stepping 0, AuthenticAMD",
+  "date": "2026-11-26",
+  "kind": "RTL simulation (CXXRTL), not hardware"
+ },
+ "programs": {
+  "dhrystone": {
+   "cycles": 473590,
+   "instret": 294403,
+   "ipc": 0.622,
+   "icache_hit": 0.9995,
+   "dcache_hit": 0.9404,
+   "ctrl_accuracy": 0.7848,
+   "branches": 57452,
+   "mispredicts": 12362,
+   "load_use_stalls": 20013,
+   "mem_stall_cycles": 128092,
+   "lockstep": "294403 commits/traps match"
+  },
+  "orbitmark": {
+   "cycles": 366060,
+   "instret": 233828,
+   "ipc": 0.639,
+   "icache_hit": 0.9995,
+   "dcache_hit": 0.9927,
+   "ctrl_accuracy": 0.8315,
+   "branches": 37646,
+   "mispredicts": 6342,
+   "load_use_stalls": 8824,
+   "mem_stall_cycles": 6143,
+   "lockstep": "233828 commits/traps match"
+  },
+  "median": {
+   "cycles": 24081,
+   "instret": 13229,
+   "ipc": 0.549,
+   "icache_hit": 0.9962,
+   "dcache_hit": 0.8771,
+   "ctrl_accuracy": 0.76,
+   "branches": 4967,
+   "mispredicts": 1192,
+   "load_use_stalls": 1029,
+   "mem_stall_cycles": 6951,
+   "lockstep": "13229 commits/traps match"
+  },
+  "multiply": {
+   "cycles": 63245,
+   "instret": 58390,
+   "ipc": 0.923,
+   "icache_hit": 0.999,
+   "dcache_hit": 0.9424,
+   "ctrl_accuracy": 0.9606,
+   "branches": 7969,
+   "mispredicts": 314,
+   "load_use_stalls": 795,
+   "mem_stall_cycles": 2915,
+   "lockstep": "58390 commits/traps match"
+  },
+  "qsort": {
+   "cycles": 350147,
+   "instret": 269271,
+   "ipc": 0.769,
+   "icache_hit": 0.9998,
+   "dcache_hit": 0.951,
+   "ctrl_accuracy": 0.8184,
+   "branches": 65413,
+   "mispredicts": 11881,
+   "load_use_stalls": 9362,
+   "mem_stall_cycles": 47197,
+   "lockstep": "269271 commits/traps match"
+  },
+  "rsort": {
+   "cycles": 877486,
+   "instret": 365664,
+   "ipc": 0.417,
+   "icache_hit": 0.9998,
+   "dcache_hit": 0.8097,
+   "ctrl_accuracy": 0.9903,
+   "branches": 16262,
+   "mispredicts": 157,
+   "load_use_stalls": 6884,
+   "mem_stall_cycles": 503984,
+   "lockstep": "365664 commits/traps match"
+  },
+  "towers": {
+   "cycles": 20372,
+   "instret": 11182,
+   "ipc": 0.549,
+   "icache_hit": 0.993,
+   "dcache_hit": 0.9475,
+   "ctrl_accuracy": 0.7869,
+   "branches": 1370,
+   "mispredicts": 292,
+   "load_use_stalls": 656,
+   "mem_stall_cycles": 7291,
+   "lockstep": "11182 commits/traps match"
+  },
+  "vvadd": {
+   "cycles": 17180,
+   "instret": 9087,
+   "ipc": 0.529,
+   "icache_hit": 0.9939,
+   "dcache_hit": 0.8401,
+   "ctrl_accuracy": 0.9398,
+   "branches": 1810,
+   "mispredicts": 109,
+   "load_use_stalls": 1540,
+   "mem_stall_cycles": 5835,
+   "lockstep": "9087 commits/traps match"
+  },
+  "memcpy": {
+   "cycles": 1350164,
+   "instret": 218941,
+   "ipc": 0.162,
+   "icache_hit": 0.9997,
+   "dcache_hit": 0.0592,
+   "ctrl_accuracy": 0.9971,
+   "branches": 38842,
+   "mispredicts": 113,
+   "load_use_stalls": 4709,
+   "mem_stall_cycles": 1125795,
+   "lockstep": "218941 commits/traps match"
+  },
+  "irqtest": {
+   "cycles": 32508,
+   "instret": 3936,
+   "ipc": 0.121,
+   "icache_hit": 0.985,
+   "dcache_hit": 0.9699,
+   "ctrl_accuracy": 0.9262,
+   "branches": 1097,
+   "mispredicts": 81,
+   "load_use_stalls": 1008,
+   "mem_stall_cycles": 26831,
+   "lockstep": "3942 commits/traps match"
+  }
+ }
+}
