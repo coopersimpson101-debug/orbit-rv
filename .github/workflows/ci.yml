@@ -101,6 +101,8 @@ jobs:
           git -C spike-src fetch --depth 1 https://github.com/riscv-software-src/riscv-isa-sim "$SPIKE_COMMIT"
           git -C spike-src checkout -q FETCH_HEAD
           test "$(git -C spike-src rev-parse HEAD)" = "$SPIKE_COMMIT"
+          # current Spike vendors berkeley-softfloat-3 as a git submodule
+          git -C spike-src submodule update --init --recursive --depth 1
           mkdir spike-src/build
           cd spike-src/build
           ../configure --prefix="$HOME/spike"
