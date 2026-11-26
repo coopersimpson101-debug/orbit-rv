@@ -50,17 +50,10 @@ MUST_MATCH = re.compile(r"^(rv64(?!mi-p-breakpoint)|bench-(?!irqtest))")
 SPIKE_TIMEOUT = 300
 
 
-INSTRET_CSRS = {0xB02, 0xC02}  # minstret, instret
-
-
-def is_instret_read(c: Commit) -> bool:
-    return (c.insn & 0x7F) == 0x73 and (c.insn >> 12) & 7 != 0 and (c.insn >> 20) in INSTRET_CSRS
-
-
 def boot_rom_commits(lines, start_pc: int) -> int:
-    """Commits Spike retires before the first one at the ELF entry (its reset ROM at 0x1000).
-    Spike counts them in minstret; orbit-rv and the ISS start at the entry with minstret = 0.
-    Derived from each log, never assumed."""
+    """Commits Spike retired before the first one at the ELF entry. Spike is started with
+    --pc=<entry>, which bypasses its reset ROM at 0x1000 (whose instructions would otherwise
+    count in minstret and leave a0/a1/t0 non-zero), so this must be 0; it is checked."""
     from orbit_rv.commitlog import _COMMIT
     n = 0
     for line in lines:
@@ -91,8 +84,7 @@ def _sc_resync(seq: list[Commit], k: int, limit: int = 256) -> int | None:
     return None
 
 
-def compare(ref: list[Commit], dut: list[Commit], nd: set[int] | None = None,
-            ref_instret_offset: int = 0) -> tuple[bool, int, str]:
+def compare(ref: list[Commit], dut: list[Commit], nd: set[int] | None = None) -> tuple[bool, int, str]:
     """Commit-by-commit compare. One architecturally allowed difference is tolerated:
     an SC may fail spuriously (Spike drops the reservation at its hart-interleave
     boundary every few thousand instructions). If one side's SC fails where the other's
@@ -102,10 +94,6 @@ def compare(ref: list[Commit], dut: list[Commit], nd: set[int] | None = None,
     resyncs = 0
     while i < len(ref) and j < len(dut):
         a, b = masked(ref[i]), masked(dut[j])
-        if ref_instret_offset and is_instret_read(a) and a.writes:
-            # Spike's minstret includes its reset-ROM instructions (boot_rom_commits)
-            a = Commit(a.priv, a.pc, a.insn,
-                       {r: (v - ref_instret_offset) & ((1 << 64) - 1) for r, v in a.writes.items()})
         if nd and j in nd:
             a, b = Commit(a.priv, a.pc, a.insn, {}), Commit(b.priv, b.pc, b.insn, {})
         if (a.pc, a.insn, a.priv, a.writes) != (b.pc, b.insn, b.priv, b.writes):
@@ -134,14 +122,19 @@ _isa: list[str] = []
 
 
 def run_spike(spike: str, elf: Path, td: Path) -> tuple[list[Commit], int] | None:
-    """(Spike's commits from the ELF entry on, reset-ROM commits before it), or None on timeout."""
+    """(Spike's commits from the ELF entry on, commits before it), or None on timeout.
+
+    ``--pc=<entry>`` starts the hart at the ELF entry with every register and counter at
+    its reset value - the same state orbit-rv's reset and the ISS start from (checked
+    against riscv-isa-sim 982f078: start_pc overrides the hart's reset PC directly)."""
     log = td / (elf.name + ".spike.log")
+    entry = load_elf(elf).entry
     for isa in (_isa or ISA_STRINGS):
         if log.exists():
             log.unlink()
         try:
             r = subprocess.run([spike, f"--isa={isa}", f"-m{mm.RAM_BASE:#x}:0x1000000",
-                                "--log-commits", f"--log={log}", str(elf)],
+                                f"--pc={entry:#x}", "--log-commits", f"--log={log}", str(elf)],
                                capture_output=True, text=True, timeout=SPIKE_TIMEOUT)
         except subprocess.TimeoutExpired:
             return None
@@ -156,7 +149,6 @@ def run_spike(spike: str, elf: Path, td: Path) -> tuple[list[Commit], int] | Non
     if not log.exists():
         return [], 0
     lines = log.read_text(errors="replace").splitlines()
-    entry = load_elf(elf).entry
     return parse_lines(lines, start_pc=entry), boot_rom_commits(lines, entry)
 
 
@@ -213,14 +205,16 @@ def main(argv=None) -> int:
                             + ("- |" if a.rtl else "") + f" spike timed out after {SPIKE_TIMEOUT} s")
                 print(rows[-1], flush=True)
                 continue
-            ok_i, n_i, msg_i = compare(spike, run_iss(elf), ref_instret_offset=boot)
+            ok_i, n_i, msg_i = compare(spike, run_iss(elf))
+            if boot:
+                ok_i, msg_i = False, f"spike retired {boot} instructions before the entry (--pc ignored?)"
             r = {"iss": ok_i, "iss_commits": n_i, "iss_msg": msg_i}
             if a.rtl and name.startswith("rv64"):
                 # Benchmarks read mcycle and compute with it, so their RTL values legitimately
                 # differ from Spike's after the first counter read; the RTL is checked against
                 # the ISS (with those reads replayed) by tools/run_riscv_tests.py / perf_table.py.
                 rtl, nd = run_rtl(elf)
-                ok_r, n_r, msg_r = compare(spike, rtl, nd, ref_instret_offset=boot)
+                ok_r, n_r, msg_r = compare(spike, rtl, nd)
                 r.update(rtl=ok_r, rtl_commits=n_r, rtl_msg=msg_r)
             r["spike_boot_rom_commits"] = boot
             results[name] = r
@@ -239,9 +233,9 @@ def main(argv=None) -> int:
     total = len(results)
     ok = sum(1 for r in results.values() if r["iss"] and r.get("rtl", True))
     bset = sorted(set(boots.values()))
-    boot_note = (f"Spike retired {', '.join(map(str, bset))} reset-ROM instruction(s) before the ELF "
-                 "entry (counted from each log); its minstret/instret reads are compared after "
-                 "subtracting that per-program count.")
+    boot_note = ("Spike was started at each ELF entry with --pc (reset ROM bypassed, so it starts "
+                 "from the same architectural state as orbit-rv); instructions it retired before "
+                 f"the entry: {', '.join(map(str, bset))}.")
     a.out.write_text(encoding="utf-8", data=f"## Spike lockstep\n\n{ok}/{total} programs match.\n\n"
                      + boot_note + "\n\n" + head + "\n".join(rows) + "\n")
     print(boot_note)

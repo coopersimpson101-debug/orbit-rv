@@ -81,14 +81,17 @@ Spike, and the riscv-tests lockstep and the orbit-os boot were re-run.
 
 The second run matched every must-match riscv-test; the benchmarks all
 diverged at their first `csrr minstret`, with Spike exactly 5 higher. Spike
-starts at its reset ROM (0x1000), which retires a few instructions before
-jumping to the ELF entry, and they count in `minstret`; orbit-rv and the ISS
-reset straight to the entry with `minstret = 0`, and the comparison starts
-at the entry. Both resets are legitimate, so `spike_compare.py` counts the
-commits before the first entry-PC commit in each Spike log (not a constant)
-and subtracts that count from Spike's `minstret`/`instret` reads before
-comparing; the count is printed in the report. `mcycle`/`cycle`/`time`
-reads stay unconverted and unchecked (implementation-defined), as before.
+starts at its reset ROM (0x1000), which retired 5 instructions (counted in
+the CI logs) before jumping to the ELF entry, and those count in `minstret`
+(and leave a0/a1/t0 non-zero); orbit-rv and the ISS reset straight to the
+entry with everything zero. Patching Spike's read values was tried and is
+unsound (values derived from the register still differ, and a program that
+writes `minstret` breaks it), so instead Spike is now started with
+`--pc=<entry>`, which at the pinned commit sets the hart's reset PC directly
+and bypasses the ROM: all three models start from the same architectural
+state. The script still counts commits before the entry in each Spike log
+and fails the program if that count is not 0. `mcycle`/`cycle`/`time` read
+values remain implementation-defined and are not compared.
 
 Spike could not be run on the Windows development machine: the
 script's plumbing was exercised locally only with the ISS standing in for

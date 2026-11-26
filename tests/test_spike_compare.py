@@ -39,15 +39,10 @@ def test_must_match_and_expected_failures():
     assert "rv64ui-v-ma_data" in EXPECTED_FAIL
 
 
-def test_reset_rom_offset_is_counted_from_the_log_and_applied_to_minstret():
+def test_commits_before_the_entry_are_counted():
     from spike_compare import boot_rom_commits
     from orbit_rv.commitlog import format_commit
     log = [format_commit(3, 0x1000 + 4 * k, 0x13, 0, 0) for k in range(5)]
     log += [format_commit(3, 0x8000_0000, 0x13, 0, 0)]
     assert boot_rom_commits(log, 0x8000_0000) == 5
-    csrr_minstret = 0xB0202673  # csrr a2, minstret
-    spike = [C(3, 0x8000_0000, csrr_minstret, {12: 0x296})]
-    ours = [C(3, 0x8000_0000, csrr_minstret, {12: 0x291})]
-    assert not compare(spike, ours)[0]
-    assert compare(spike, ours, ref_instret_offset=5)[0]
-    assert not compare(spike, ours, ref_instret_offset=4)[0]
+    assert boot_rom_commits(log[5:], 0x8000_0000) == 0
